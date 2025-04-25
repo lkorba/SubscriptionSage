@@ -260,7 +260,7 @@ def get_logo_url_for_service(service_name, url=None):
         'gitlab': 'https://gitlab.com/favicon.ico',
         'granola': 'https://www.google.com/s2/favicons?domain=granola.ai&sz=64',
         'linear': 'https://www.google.com/s2/favicons?domain=linear.app&sz=64',
-        'lovable': 'https://lovable.ai/favicon.ico',
+        'lovable': 'https://www.google.com/s2/favicons?domain=lovable.dev&sz=64',
         'notability': 'https://notability.com/favicon.ico',
         'notion': 'https://www.notion.so/images/favicon.ico',
         'perplexity': 'https://www.perplexity.ai/favicon.ico',

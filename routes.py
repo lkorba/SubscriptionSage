@@ -20,7 +20,7 @@ DEFAULT_SUBSCRIPTIONS = [
     {"name": "GitLab", "url": "https://gitlab.com/"},
     {"name": "Granola", "url": "https://granola.ai/"},
     {"name": "Linear", "url": "https://linear.app/"},
-    {"name": "Lovable", "url": "https://lovable.ai/"},
+    {"name": "Lovable", "url": "https://lovable.dev/"},
     {"name": "Netflix", "url": "https://www.netflix.com/"},
     {"name": "Notability", "url": "https://notability.com/"},
     {"name": "Notion", "url": "https://www.notion.so/"},
