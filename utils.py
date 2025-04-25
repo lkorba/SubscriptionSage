@@ -359,5 +359,5 @@ def handle_image_upload(file, subscription_id):
         return f"/{upload_path}"  # Return relative URL path
     
     except Exception as e:
-        logger.error(f"Error processing uploaded image: {str(e)}")
+        logging.error(f"Error processing uploaded image: {str(e)}")
         return None

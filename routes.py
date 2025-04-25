@@ -1,6 +1,7 @@
 import os
 import csv
 import io
+import logging
 from datetime import datetime, timedelta
 from flask import render_template, flash, redirect, url_for, request, jsonify, send_file
 from flask_login import login_user, logout_user, login_required, current_user
@@ -205,6 +206,14 @@ def add_subscription():
             from utils import get_logo_url_for_service
             logo_url = get_logo_url_for_service(name)
         
+        # Check if we used a temporary ID for the logo
+        used_temp_id = False
+        if logo_url and 'temp_' in logo_url:
+            used_temp_id = True
+            temp_logo_url = logo_url
+            # Use a placeholder until we have the real ID
+            logo_url = None
+
         subscription = Subscription(
             user_id=current_user.id,
             name=name,
@@ -222,6 +231,31 @@ def add_subscription():
         
         db.session.add(subscription)
         db.session.commit()
+        
+        # If we used a temporary ID for the logo upload, we need to rename the file
+        # with the actual subscription ID and update the logo_url
+        if used_temp_id and temp_logo_url:
+            import os
+            from utils import handle_image_upload
+            
+            # Get the original file path
+            temp_file_path = temp_logo_url[1:]  # Remove leading slash
+            
+            if os.path.exists(temp_file_path):
+                # Get file extension
+                extension = os.path.splitext(temp_file_path)[1]
+                
+                # Create new filename with actual subscription ID
+                new_filename = f"{subscription.id}_{os.path.basename(temp_file_path).split('_', 1)[1]}"
+                new_path = os.path.join('static', 'uploads', new_filename)
+                
+                # Rename file
+                try:
+                    os.rename(temp_file_path, new_path)
+                    subscription.logo_url = f"/{new_path}"
+                    db.session.commit()
+                except Exception as e:
+                    logging.error(f"Error renaming temp logo file: {str(e)}")
         
         # Create default reminders for this subscription
         create_subscription_reminders(subscription)
