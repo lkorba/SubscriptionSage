@@ -378,6 +378,7 @@ def export_csv():
         csv_data.append({
             'Name': sub.name,
             'URL': sub.url,
+            'Logo URL': sub.logo_url or '',
             'Amount': sub.amount,
             'Currency': sub.currency,
             'Billing Cycle': sub.billing_cycle,
@@ -431,6 +432,7 @@ def import_csv():
         for _, row in df.iterrows():
             name = row['Name']
             url = row.get('URL', '')
+            logo_url = row.get('Logo URL', '')  # Get logo URL if it exists
             amount = float(row.get('Amount', 0))
             currency = row.get('Currency', 'USD')
             billing_cycle = row.get('Billing Cycle', 'monthly')
@@ -453,6 +455,9 @@ def import_csv():
             if existing_sub:
                 # Update existing subscription
                 existing_sub.url = url
+                # Update logo_url if provided in CSV, otherwise keep existing
+                if logo_url:
+                    existing_sub.logo_url = logo_url
                 existing_sub.amount = amount
                 existing_sub.currency = currency
                 existing_sub.billing_cycle = billing_cycle
@@ -462,10 +467,14 @@ def import_csv():
                 existing_sub.calculate_next_payment_date()
             else:
                 # Create new subscription
+                from utils import get_logo_url_for_service
+                logo_url = get_logo_url_for_service(name)
+                
                 subscription = Subscription(
                     user_id=current_user.id,
                     name=name,
                     url=url,
+                    logo_url=logo_url,
                     amount=amount,
                     currency=currency,
                     billing_cycle=billing_cycle,

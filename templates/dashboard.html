@@ -114,11 +114,18 @@
                     {% for subscription in subscriptions %}
                     <tr>
                         <td>
-                            {% if subscription.url %}
-                            <a href="{{ subscription.url }}" target="_blank">{{ subscription.name }}</a>
-                            {% else %}
-                            {{ subscription.name }}
-                            {% endif %}
+                            <div class="d-flex align-items-center">
+                                {% if subscription.logo_url %}
+                                <img src="{{ subscription.logo_url }}" alt="{{ subscription.name }} logo" class="me-2" width="24" height="24">
+                                {% endif %}
+                                <span>
+                                    {% if subscription.url %}
+                                    <a href="{{ subscription.url }}" target="_blank">{{ subscription.name }}</a>
+                                    {% else %}
+                                    {{ subscription.name }}
+                                    {% endif %}
+                                </span>
+                            </div>
                         </td>
                         <td>{{ '%0.2f'|format(subscription.amount) }} {{ subscription.currency }}</td>
                         <td data-i18n="billing.{{ subscription.billing_cycle }}">{{ subscription.billing_cycle.capitalize() }}</td>
