@@ -228,7 +228,7 @@ def get_logo_url_for_service(service_name):
     # Dictionary mapping service names to their logo URLs
     # Using popular service logos from CDNs for recognizable services
     service_logos = {
-        'netflix': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/netflix/netflix-original.svg',
+        'netflix': 'https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg',
         'spotify': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/spotify/spotify-original.svg',
         'apple': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/apple/apple-original.svg',
         'apple tv': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/apple/apple-original.svg',
