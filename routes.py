@@ -202,9 +202,9 @@ def add_subscription():
                 from utils import get_logo_url_for_service
                 logo_url = get_logo_url_for_service(name)
         else:
-            # Use default logo based on service name
+            # Use default logo based on service name, and try to get favicon from the URL if provided
             from utils import get_logo_url_for_service
-            logo_url = get_logo_url_for_service(name)
+            logo_url = get_logo_url_for_service(name, url)
         
         # Check if we used a temporary ID for the logo
         used_temp_id = False
@@ -269,7 +269,7 @@ def add_subscription():
     # Add logo URLs to suggested subscriptions
     from utils import get_logo_url_for_service
     for sub in suggested_subscriptions:
-        sub['logo_url'] = get_logo_url_for_service(sub['name'])
+        sub['logo_url'] = get_logo_url_for_service(sub['name'], sub['url'])
     
     # Pass today's date for the start_date field
     today = datetime.now().strftime('%Y-%m-%d')
@@ -311,7 +311,7 @@ def edit_subscription(id):
         # Update logo URL if name changed and user didn't choose to keep the logo
         elif old_name != subscription.name and not keep_logo:
             from utils import get_logo_url_for_service
-            subscription.logo_url = get_logo_url_for_service(subscription.name)
+            subscription.logo_url = get_logo_url_for_service(subscription.name, subscription.url)
         
         # Recalculate next payment date
         subscription.calculate_next_payment_date()
@@ -531,7 +531,7 @@ def import_csv():
             else:
                 # Create new subscription
                 from utils import get_logo_url_for_service
-                logo_url = get_logo_url_for_service(name)
+                logo_url = get_logo_url_for_service(name, url)
                 
                 subscription = Subscription(
                     user_id=current_user.id,

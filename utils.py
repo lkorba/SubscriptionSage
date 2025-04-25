@@ -223,8 +223,11 @@ def reset_reminders_for_next_period():
             
             db.session.commit()
 
-def get_logo_url_for_service(service_name):
-    """Get a logo URL for a specific service based on its name."""
+def get_logo_url_for_service(service_name, url=None):
+    """
+    Get a logo URL for a specific service based on its name.
+    If no match is found and URL is provided, attempt to get favicon from the website.
+    """
     # Dictionary mapping service names to their logo URLs
     # Using popular service logos from CDNs for recognizable services
     service_logos = {
@@ -237,8 +240,8 @@ def get_logo_url_for_service(service_name):
         'amazon prime': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/amazonwebservices/amazonwebservices-original.svg',
         'google': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/google/google-original.svg',
         'google one': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/google/google-original.svg',
-        'youtube': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/google/google-original.svg',
-        'youtube premium': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/google/google-original.svg',
+        'youtube': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/youtube/youtube-original.svg',
+        'youtube premium': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/youtube/youtube-original.svg',
         'github': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg',
         'replit': 'https://replit.com/public/icons/apple-icon-180.png',
         'slack': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/slack/slack-original.svg',
@@ -252,6 +255,19 @@ def get_logo_url_for_service(service_name):
         'hulu': 'https://upload.wikimedia.org/wikipedia/commons/e/e4/Hulu_Logo.svg',
         'disney+': 'https://upload.wikimedia.org/wikipedia/commons/3/3e/Disney%2B_logo.svg',
         'twitch': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/twitch/twitch-original.svg',
+        'bolt': 'https://bolt.eu/favicon.ico',
+        'cursor': 'https://cursor.sh/apple-icon-180.png',
+        'gitlab': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/gitlab/gitlab-original.svg',
+        'granola': 'https://granola.app/favicon.ico',
+        'linear': 'https://asset.brandfetch.io/ideyqT5U_G/idWOGMQx-C.png',
+        'lovable': 'https://lovable.ai/favicon.ico',
+        'notability': 'https://notability.com/favicon.ico',
+        'notion': 'https://www.notion.so/images/favicon.ico',
+        'perplexity': 'https://www.perplexity.ai/favicon.ico',
+        'perplexity ai': 'https://www.perplexity.ai/favicon.ico',
+        'superhuman': 'https://superhuman.com/favicon.ico',
+        'todoist': 'https://todoist.com/favicon.ico',
+        'v0': 'https://v0.dev/favicon.ico',
     }
     
     # Default logo for unknown services
@@ -263,6 +279,40 @@ def get_logo_url_for_service(service_name):
     for known_service, logo in service_logos.items():
         if known_service in service_name_lower:
             return logo
+    
+    # If URL is provided, try to get favicon from website
+    if url:
+        try:
+            # Parse the URL to get the domain
+            from urllib.parse import urlparse
+            parsed_url = urlparse(url)
+            
+            # Only continue if we have a valid domain
+            if parsed_url.netloc:
+                # Try common favicon locations
+                favicon_urls = [
+                    f"{parsed_url.scheme}://{parsed_url.netloc}/favicon.ico",
+                    f"{parsed_url.scheme}://{parsed_url.netloc}/favicon.png",
+                    f"{parsed_url.scheme}://{parsed_url.netloc}/apple-touch-icon.png",
+                    f"{parsed_url.scheme}://{parsed_url.netloc}/apple-icon.png",
+                ]
+                
+                # Use Google's favicon service as a fallback
+                google_favicon = f"https://www.google.com/s2/favicons?domain={parsed_url.netloc}&sz=64"
+                
+                # Try direct favicon URLs first
+                for favicon_url in favicon_urls:
+                    try:
+                        response = requests.head(favicon_url, timeout=2)
+                        if response.status_code == 200:
+                            return favicon_url
+                    except:
+                        pass
+                
+                # Fallback to Google's favicon service
+                return google_favicon
+        except Exception as e:
+            logging.error(f"Error fetching favicon for {url}: {str(e)}")
     
     return default_logo
 
