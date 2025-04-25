@@ -158,6 +158,9 @@ def dashboard():
     for cycle in billing_cycles:
         cycle_counts[cycle] = sum(1 for sub in subscriptions if sub.billing_cycle == cycle and sub.is_active)
     
+    # Pass current time to template
+    current_datetime = datetime.now()
+    
     return render_template(
         'dashboard.html',
         subscriptions=subscriptions,
@@ -165,7 +168,8 @@ def dashboard():
         monthly_spending=monthly_spending,
         total_subscriptions=total_subscriptions,
         active_subscriptions=active_subscriptions,
-        cycle_counts=cycle_counts
+        cycle_counts=cycle_counts,
+        current_datetime=current_datetime
     )
 
 # Subscription management

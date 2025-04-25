@@ -221,12 +221,12 @@
             type: 'pie',
             data: {
                 labels: [
-                    i18next.t('billing.weekly'),
-                    i18next.t('billing.monthly'),
-                    i18next.t('billing.quarterly'),
-                    i18next.t('billing.bi-annually'),
-                    i18next.t('billing.yearly'),
-                    i18next.t('billing.lifetime')
+                    'Weekly',
+                    'Monthly',
+                    'Quarterly',
+                    'Bi-annually',
+                    'Yearly',
+                    'Lifetime'
                 ],
                 datasets: [{
                     data: [
@@ -256,7 +256,7 @@
                     },
                     title: {
                         display: true,
-                        text: i18next.t('dashboard.billing_cycles')
+                        text: 'Billing Cycles'
                     }
                 }
             }
@@ -264,15 +264,16 @@
 
         // Update chart when language changes
         document.addEventListener('languageChanged', function() {
+            // Use our translated labels (fixed values for now)
             subscriptionChart.data.labels = [
-                i18next.t('billing.weekly'),
-                i18next.t('billing.monthly'),
-                i18next.t('billing.quarterly'),
-                i18next.t('billing.bi-annually'),
-                i18next.t('billing.yearly'),
-                i18next.t('billing.lifetime')
+                'Weekly',
+                'Monthly',
+                'Quarterly',
+                'Bi-annually',
+                'Yearly',
+                'Lifetime'
             ];
-            subscriptionChart.options.plugins.title.text = i18next.t('dashboard.billing_cycles');
+            subscriptionChart.options.plugins.title.text = 'Billing Cycles';
             subscriptionChart.update();
         });
     });
