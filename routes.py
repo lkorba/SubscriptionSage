@@ -341,13 +341,17 @@ def reports():
     total_monthly = sum(spending_by_cycle.values())
     total_yearly = total_monthly * 12
     
+    # Pass current time to template
+    current_datetime = datetime.now()
+    
     return render_template(
         'reports.html',
         subscriptions=subscriptions,
         spending_by_cycle=spending_by_cycle,
         upcoming_payments=upcoming_payments,
         total_monthly=total_monthly,
-        total_yearly=total_yearly
+        total_yearly=total_yearly,
+        current_datetime=current_datetime
     )
 
 # CSV import/export

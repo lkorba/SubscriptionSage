@@ -57,7 +57,7 @@
                     <div class="list-group-item list-group-item-action">
                         <div class="d-flex w-100 justify-content-between">
                             <h5 class="mb-1">{{ payment.name }}</h5>
-                            <span class="badge {% if payment.next_payment_date.date() <= now().date() + timedelta(days=7) %}bg-danger{% else %}bg-primary{% endif %}">
+                            <span class="badge {% if payment.next_payment_date.date() <= current_datetime.date() %}bg-danger{% else %}bg-primary{% endif %}">
                                 {{ payment.next_payment_date.strftime('%Y-%m-%d') }}
                             </span>
                         </div>
@@ -226,14 +226,14 @@
             type: 'bar',
             data: {
                 labels: [
-                    i18next.t('billing.weekly'),
-                    i18next.t('billing.monthly'),
-                    i18next.t('billing.quarterly'),
-                    i18next.t('billing.bi-annually'),
-                    i18next.t('billing.yearly')
+                    'Weekly',
+                    'Monthly',
+                    'Quarterly',
+                    'Bi-annually',
+                    'Yearly'
                 ],
                 datasets: [{
-                    label: i18next.t('reports.monthly_spending_in', {'currency': '{{ current_user.preferred_currency }}'}),
+                    label: 'Monthly Spending in {{ current_user.preferred_currency }}',
                     data: [
                         {{ spending_by_cycle.weekly }},
                         {{ spending_by_cycle.monthly }},
@@ -258,7 +258,7 @@
                         beginAtZero: true,
                         title: {
                             display: true,
-                            text: i18next.t('reports.amount_in', {'currency': '{{ current_user.preferred_currency }}'})
+                            text: 'Amount in {{ current_user.preferred_currency }}'
                         }
                     }
                 },
