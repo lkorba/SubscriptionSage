@@ -1,0 +1,280 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Subscription Tracker{% endblock %}
+
+{% block content %}
+<h1 class="mb-4" data-i18n="dashboard.title">Dashboard</h1>
+
+<!-- Summary Cards -->
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <h5 class="card-title" data-i18n="dashboard.active_subscriptions">Active Subscriptions</h5>
+                <p class="card-text display-4">{{ active_subscriptions }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <h5 class="card-title" data-i18n="dashboard.monthly_spending">Monthly Spending</h5>
+                <p class="card-text display-4">{{ '%0.2f'|format(monthly_spending) }} {{ current_user.preferred_currency }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <h5 class="card-title" data-i18n="dashboard.next_payment">Next Payment</h5>
+                {% if upcoming_payments %}
+                <p class="card-text">
+                    <span class="display-4">{{ upcoming_payments[0].name }}</span><br>
+                    <span>{{ upcoming_payments[0].next_payment_date.strftime('%Y-%m-%d') }}</span>
+                </p>
+                {% else %}
+                <p class="card-text display-4">-</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Visualization & Upcoming Payments -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0" data-i18n="dashboard.distribution">Subscription Distribution</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="subscriptionChart" width="400" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0" data-i18n="dashboard.upcoming_payments">Upcoming Payments</h5>
+            </div>
+            <div class="card-body">
+                {% if upcoming_payments %}
+                <div class="list-group">
+                    {% for payment in upcoming_payments %}
+                    <div class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">{{ payment.name }}</h5>
+                            <span class="badge {% if payment.next_payment_date.date() <= now().date() + timedelta(days=7) %}bg-danger{% else %}bg-primary{% endif %}">
+                                {{ payment.next_payment_date.strftime('%Y-%m-%d') }}
+                            </span>
+                        </div>
+                        <p class="mb-1">{{ '%0.2f'|format(payment.amount) }} {{ payment.currency }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-center my-4" data-i18n="dashboard.no_upcoming">No upcoming payments</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Subscriptions Table -->
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0" data-i18n="dashboard.my_subscriptions">My Subscriptions</h5>
+        <div class="btn-group">
+            <a href="{{ url_for('add_subscription') }}" class="btn btn-sm btn-primary">
+                <i class="fas fa-plus me-1"></i> <span data-i18n="dashboard.add">Add</span>
+            </a>
+            <a href="{{ url_for('export_csv') }}" class="btn btn-sm btn-secondary">
+                <i class="fas fa-download me-1"></i> <span data-i18n="dashboard.export">Export</span>
+            </a>
+            <button type="button" class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#importModal">
+                <i class="fas fa-upload me-1"></i> <span data-i18n="dashboard.import">Import</span>
+            </button>
+        </div>
+    </div>
+    <div class="card-body">
+        {% if subscriptions %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th data-i18n="subscription.name">Name</th>
+                        <th data-i18n="subscription.amount">Amount</th>
+                        <th data-i18n="subscription.billing_cycle">Billing Cycle</th>
+                        <th data-i18n="subscription.next_payment">Next Payment</th>
+                        <th data-i18n="subscription.status">Status</th>
+                        <th data-i18n="subscription.actions">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for subscription in subscriptions %}
+                    <tr>
+                        <td>
+                            {% if subscription.url %}
+                            <a href="{{ subscription.url }}" target="_blank">{{ subscription.name }}</a>
+                            {% else %}
+                            {{ subscription.name }}
+                            {% endif %}
+                        </td>
+                        <td>{{ '%0.2f'|format(subscription.amount) }} {{ subscription.currency }}</td>
+                        <td data-i18n="billing.{{ subscription.billing_cycle }}">{{ subscription.billing_cycle.capitalize() }}</td>
+                        <td>
+                            {% if subscription.billing_cycle == 'lifetime' %}
+                            <span class="badge bg-secondary" data-i18n="subscription.one_time">One Time</span>
+                            {% else %}
+                            {{ subscription.next_payment_date.strftime('%Y-%m-%d') if subscription.next_payment_date else '-' }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if subscription.is_active %}
+                            <span class="badge bg-success" data-i18n="subscription.active">Active</span>
+                            {% else %}
+                            <span class="badge bg-secondary" data-i18n="subscription.inactive">Inactive</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="btn-group">
+                                <a href="{{ url_for('edit_subscription', id=subscription.id) }}" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal-{{ subscription.id }}">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center my-5">
+            <h4 data-i18n="dashboard.no_subscriptions">No subscriptions found</h4>
+            <p data-i18n="dashboard.add_new_message">Start tracking your subscriptions by adding your first one.</p>
+            <a href="{{ url_for('add_subscription') }}" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i> <span data-i18n="dashboard.add_first">Add Your First Subscription</span>
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Delete Confirmation Modals -->
+{% for subscription in subscriptions %}
+<div class="modal fade" id="deleteModal-{{ subscription.id }}" tabindex="-1" aria-labelledby="deleteModalLabel-{{ subscription.id }}" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel-{{ subscription.id }}" data-i18n="dashboard.confirm_delete">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p data-i18n="[html]dashboard.delete_confirmation" data-i18n-options='{"name": "{{ subscription.name }}"}'>
+                    Are you sure you want to delete the subscription <strong>{{ subscription.name }}</strong>? This action cannot be undone.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-i18n="general.cancel">Cancel</button>
+                <form action="{{ url_for('delete_subscription', id=subscription.id) }}" method="POST">
+                    <button type="submit" class="btn btn-danger" data-i18n="general.delete">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<!-- Import Modal -->
+<div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="importModalLabel" data-i18n="dashboard.import_subscriptions">Import Subscriptions</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="{{ url_for('import_csv') }}" method="POST" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="csv_file" class="form-label" data-i18n="dashboard.select_csv">Select CSV File</label>
+                        <input class="form-control" type="file" id="csv_file" name="csv_file" accept=".csv" required>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary" data-i18n="dashboard.upload_import">Upload & Import</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Chart initialization
+        const ctx = document.getElementById('subscriptionChart').getContext('2d');
+        const subscriptionChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: [
+                    i18next.t('billing.weekly'),
+                    i18next.t('billing.monthly'),
+                    i18next.t('billing.quarterly'),
+                    i18next.t('billing.bi-annually'),
+                    i18next.t('billing.yearly'),
+                    i18next.t('billing.lifetime')
+                ],
+                datasets: [{
+                    data: [
+                        {{ cycle_counts.weekly }},
+                        {{ cycle_counts.monthly }},
+                        {{ cycle_counts.quarterly }},
+                        {{ cycle_counts['bi-annually'] }},
+                        {{ cycle_counts.yearly }},
+                        {{ cycle_counts.lifetime }}
+                    ],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.8)',
+                        'rgba(54, 162, 235, 0.8)',
+                        'rgba(255, 206, 86, 0.8)',
+                        'rgba(75, 192, 192, 0.8)',
+                        'rgba(153, 102, 255, 0.8)',
+                        'rgba(255, 159, 64, 0.8)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    },
+                    title: {
+                        display: true,
+                        text: i18next.t('dashboard.billing_cycles')
+                    }
+                }
+            }
+        });
+
+        // Update chart when language changes
+        document.addEventListener('languageChanged', function() {
+            subscriptionChart.data.labels = [
+                i18next.t('billing.weekly'),
+                i18next.t('billing.monthly'),
+                i18next.t('billing.quarterly'),
+                i18next.t('billing.bi-annually'),
+                i18next.t('billing.yearly'),
+                i18next.t('billing.lifetime')
+            ];
+            subscriptionChart.options.plugins.title.text = i18next.t('dashboard.billing_cycles');
+            subscriptionChart.update();
+        });
+    });
+</script>
+{% endblock %}

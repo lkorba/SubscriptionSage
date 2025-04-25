@@ -1,0 +1,293 @@
+{% extends "base.html" %}
+
+{% block title %}Reports - Subscription Tracker{% endblock %}
+
+{% block content %}
+<h1 class="mb-4" data-i18n="reports.title">Subscription Reports</h1>
+
+<!-- Summary Cards -->
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <h5 class="card-title" data-i18n="reports.total_subscriptions">Total Subscriptions</h5>
+                <p class="card-text display-4">{{ subscriptions|length }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <h5 class="card-title" data-i18n="reports.monthly_spending">Monthly Spending</h5>
+                <p class="card-text display-4">{{ '%0.2f'|format(total_monthly) }} {{ current_user.preferred_currency }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <h5 class="card-title" data-i18n="reports.yearly_spending">Yearly Spending</h5>
+                <p class="card-text display-4">{{ '%0.2f'|format(total_yearly) }} {{ current_user.preferred_currency }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts & Upcoming Payments -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0" data-i18n="reports.monthly_by_cycle">Monthly Spending by Billing Cycle</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="spendingChart" width="400" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0" data-i18n="reports.upcoming_month">Upcoming Payments (Next 30 Days)</h5>
+            </div>
+            <div class="card-body">
+                {% if upcoming_payments %}
+                <div class="list-group">
+                    {% for payment in upcoming_payments %}
+                    <div class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">{{ payment.name }}</h5>
+                            <span class="badge {% if payment.next_payment_date.date() <= now().date() + timedelta(days=7) %}bg-danger{% else %}bg-primary{% endif %}">
+                                {{ payment.next_payment_date.strftime('%Y-%m-%d') }}
+                            </span>
+                        </div>
+                        <p class="mb-1">{{ '%0.2f'|format(payment.amount) }} {{ payment.currency }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-center my-4" data-i18n="reports.no_upcoming">No upcoming payments in the next 30 days</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Export Options -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0" data-i18n="reports.export_data">Export Data</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title" data-i18n="reports.csv_export">CSV Export</h5>
+                        <p class="card-text" data-i18n="reports.csv_description">Export your subscription data to a CSV file for use in spreadsheet applications.</p>
+                        <a href="{{ url_for('export_csv') }}" class="btn btn-primary">
+                            <i class="fas fa-download me-1"></i> <span data-i18n="reports.download_csv">Download CSV</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title" data-i18n="reports.import_data">Import Data</h5>
+                        <p class="card-text" data-i18n="reports.import_description">Upload a CSV file to import subscription data.</p>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#importModal">
+                            <i class="fas fa-upload me-1"></i> <span data-i18n="reports.import_csv">Import CSV</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Subscription List -->
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0" data-i18n="reports.all_subscriptions">All Subscriptions</h5>
+    </div>
+    <div class="card-body">
+        {% if subscriptions %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th data-i18n="subscription.name">Name</th>
+                        <th data-i18n="subscription.amount">Amount</th>
+                        <th data-i18n="subscription.billing_cycle">Billing Cycle</th>
+                        <th data-i18n="reports.monthly_cost">Monthly Cost</th>
+                        <th data-i18n="reports.yearly_cost">Yearly Cost</th>
+                        <th data-i18n="subscription.next_payment">Next Payment</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for subscription in subscriptions %}
+                    {% if subscription.is_active %}
+                    <tr>
+                        <td>
+                            {% if subscription.url %}
+                            <a href="{{ subscription.url }}" target="_blank">{{ subscription.name }}</a>
+                            {% else %}
+                            {{ subscription.name }}
+                            {% endif %}
+                        </td>
+                        <td>{{ '%0.2f'|format(subscription.amount) }} {{ subscription.currency }}</td>
+                        <td data-i18n="billing.{{ subscription.billing_cycle }}">{{ subscription.billing_cycle.capitalize() }}</td>
+                        <td>
+                            {% if subscription.billing_cycle == 'weekly' %}
+                                {{ '%0.2f'|format(subscription.amount * 4.33) }} {{ subscription.currency }}
+                            {% elif subscription.billing_cycle == 'monthly' %}
+                                {{ '%0.2f'|format(subscription.amount) }} {{ subscription.currency }}
+                            {% elif subscription.billing_cycle == 'quarterly' %}
+                                {{ '%0.2f'|format(subscription.amount / 3) }} {{ subscription.currency }}
+                            {% elif subscription.billing_cycle == 'bi-annually' %}
+                                {{ '%0.2f'|format(subscription.amount / 6) }} {{ subscription.currency }}
+                            {% elif subscription.billing_cycle == 'yearly' %}
+                                {{ '%0.2f'|format(subscription.amount / 12) }} {{ subscription.currency }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if subscription.billing_cycle == 'weekly' %}
+                                {{ '%0.2f'|format(subscription.amount * 52) }} {{ subscription.currency }}
+                            {% elif subscription.billing_cycle == 'monthly' %}
+                                {{ '%0.2f'|format(subscription.amount * 12) }} {{ subscription.currency }}
+                            {% elif subscription.billing_cycle == 'quarterly' %}
+                                {{ '%0.2f'|format(subscription.amount * 4) }} {{ subscription.currency }}
+                            {% elif subscription.billing_cycle == 'bi-annually' %}
+                                {{ '%0.2f'|format(subscription.amount * 2) }} {{ subscription.currency }}
+                            {% elif subscription.billing_cycle == 'yearly' %}
+                                {{ '%0.2f'|format(subscription.amount) }} {{ subscription.currency }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if subscription.billing_cycle == 'lifetime' %}
+                            <span class="badge bg-secondary" data-i18n="subscription.one_time">One Time</span>
+                            {% else %}
+                            {{ subscription.next_payment_date.strftime('%Y-%m-%d') if subscription.next_payment_date else '-' }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center my-5">
+            <h4 data-i18n="reports.no_subscriptions">No subscriptions found</h4>
+            <p data-i18n="reports.add_new_message">Start tracking your subscriptions by adding your first one.</p>
+            <a href="{{ url_for('add_subscription') }}" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i> <span data-i18n="reports.add_first">Add Your First Subscription</span>
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Import Modal -->
+<div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="importModalLabel" data-i18n="reports.import_subscriptions">Import Subscriptions</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="{{ url_for('import_csv') }}" method="POST" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="csv_file" class="form-label" data-i18n="reports.select_csv">Select CSV File</label>
+                        <input class="form-control" type="file" id="csv_file" name="csv_file" accept=".csv" required>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary" data-i18n="reports.upload_import">Upload & Import</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Chart initialization
+        const ctx = document.getElementById('spendingChart').getContext('2d');
+        const spendingChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: [
+                    i18next.t('billing.weekly'),
+                    i18next.t('billing.monthly'),
+                    i18next.t('billing.quarterly'),
+                    i18next.t('billing.bi-annually'),
+                    i18next.t('billing.yearly')
+                ],
+                datasets: [{
+                    label: i18next.t('reports.monthly_spending_in', {'currency': '{{ current_user.preferred_currency }}'}),
+                    data: [
+                        {{ spending_by_cycle.weekly }},
+                        {{ spending_by_cycle.monthly }},
+                        {{ spending_by_cycle.quarterly }},
+                        {{ spending_by_cycle['bi-annually'] }},
+                        {{ spending_by_cycle.yearly }}
+                    ],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.8)',
+                        'rgba(54, 162, 235, 0.8)',
+                        'rgba(255, 206, 86, 0.8)',
+                        'rgba(75, 192, 192, 0.8)',
+                        'rgba(153, 102, 255, 0.8)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: i18next.t('reports.amount_in', {'currency': '{{ current_user.preferred_currency }}'})
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: i18next.t('reports.monthly_spending_by_cycle')
+                    }
+                }
+            }
+        });
+
+        // Update chart when language changes
+        document.addEventListener('languageChanged', function() {
+            spendingChart.data.labels = [
+                i18next.t('billing.weekly'),
+                i18next.t('billing.monthly'),
+                i18next.t('billing.quarterly'),
+                i18next.t('billing.bi-annually'),
+                i18next.t('billing.yearly')
+            ];
+            spendingChart.data.datasets[0].label = i18next.t('reports.monthly_spending_in', {'currency': '{{ current_user.preferred_currency }}'});
+            spendingChart.options.plugins.title.text = i18next.t('reports.monthly_spending_by_cycle');
+            spendingChart.options.scales.y.title.text = i18next.t('reports.amount_in', {'currency': '{{ current_user.preferred_currency }}'});
+            spendingChart.update();
+        });
+    });
+</script>
+{% endblock %}

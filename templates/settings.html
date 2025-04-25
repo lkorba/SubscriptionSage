@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}Settings - Subscription Tracker{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="mb-0" data-i18n="settings.title">Account Settings</h2>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('settings') }}">
+                    <div class="mb-4">
+                        <h4 data-i18n="settings.profile">Profile Information</h4>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="username" class="form-label" data-i18n="settings.username">Username</label>
+                                <input type="text" class="form-control" id="username" value="{{ current_user.username }}" disabled>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="email" class="form-label" data-i18n="settings.email">Email</label>
+                                <input type="email" class="form-control" id="email" value="{{ current_user.email }}" disabled>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h4 data-i18n="settings.preferences">Preferences</h4>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="language" class="form-label" data-i18n="settings.language">Language</label>
+                                <select class="form-select" id="language" name="language">
+                                    <option value="en" {% if current_user.language == 'en' %}selected{% endif %} data-i18n="languages.english">English</option>
+                                    <option value="pl" {% if current_user.language == 'pl' %}selected{% endif %} data-i18n="languages.polish">Polish</option>
+                                    <option value="cs" {% if current_user.language == 'cs' %}selected{% endif %} data-i18n="languages.czech">Czech</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="preferred_currency" class="form-label" data-i18n="settings.preferred_currency">Preferred Currency</label>
+                                <select class="form-select" id="preferred_currency" name="preferred_currency">
+                                    <option value="USD" {% if current_user.preferred_currency == 'USD' %}selected{% endif %} data-i18n="currencies.usd">USD - US Dollar</option>
+                                    <option value="EUR" {% if current_user.preferred_currency == 'EUR' %}selected{% endif %} data-i18n="currencies.eur">EUR - Euro</option>
+                                    <option value="CZK" {% if current_user.preferred_currency == 'CZK' %}selected{% endif %} data-i18n="currencies.czk">CZK - Czech Koruna</option>
+                                    <option value="PLN" {% if current_user.preferred_currency == 'PLN' %}selected{% endif %} data-i18n="currencies.pln">PLN - Polish Złoty</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h4 data-i18n="settings.change_password">Change Password</h4>
+                        <div class="mb-3">
+                            <label for="current_password" class="form-label" data-i18n="settings.current_password">Current Password</label>
+                            <input type="password" class="form-control" id="current_password" name="current_password">
+                        </div>
+                        <div class="mb-3">
+                            <label for="new_password" class="form-label" data-i18n="settings.new_password">New Password</label>
+                            <input type="password" class="form-control" id="new_password" name="new_password">
+                        </div>
+                        <div class="mb-3">
+                            <label for="confirm_password" class="form-label" data-i18n="settings.confirm_password">Confirm New Password</label>
+                            <input type="password" class="form-control" id="confirm_password" name="confirm_password">
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-secondary me-md-2" data-i18n="general.cancel">Cancel</a>
+                        <button type="submit" class="btn btn-primary" data-i18n="general.save_changes">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

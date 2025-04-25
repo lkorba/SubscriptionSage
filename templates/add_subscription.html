@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}Add Subscription - Subscription Tracker{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="mb-0" data-i18n="add_subscription.title">Add New Subscription</h2>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('add_subscription') }}">
+                    <div class="mb-3">
+                        <label for="name" class="form-label" data-i18n="subscription.name">Name</label>
+                        <input type="text" class="form-control" id="name" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="url" class="form-label" data-i18n="subscription.url">URL</label>
+                        <input type="url" class="form-control" id="url" name="url" placeholder="https://example.com">
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="amount" class="form-label" data-i18n="subscription.amount">Amount</label>
+                            <input type="number" class="form-control" id="amount" name="amount" step="0.01" min="0">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="currency" class="form-label" data-i18n="subscription.currency">Currency</label>
+                            <select class="form-select" id="currency" name="currency">
+                                <option value="USD" data-i18n="currencies.usd">USD - US Dollar</option>
+                                <option value="EUR" data-i18n="currencies.eur">EUR - Euro</option>
+                                <option value="CZK" data-i18n="currencies.czk">CZK - Czech Koruna</option>
+                                <option value="PLN" data-i18n="currencies.pln">PLN - Polish Złoty</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="billing_cycle" class="form-label" data-i18n="subscription.billing_cycle">Billing Cycle</label>
+                            <select class="form-select" id="billing_cycle" name="billing_cycle" required>
+                                <option value="weekly" data-i18n="billing.weekly">Weekly</option>
+                                <option value="monthly" selected data-i18n="billing.monthly">Monthly</option>
+                                <option value="quarterly" data-i18n="billing.quarterly">Quarterly</option>
+                                <option value="bi-annually" data-i18n="billing.bi-annually">Bi-annually</option>
+                                <option value="yearly" data-i18n="billing.yearly">Yearly</option>
+                                <option value="lifetime" data-i18n="billing.lifetime">Lifetime</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="start_date" class="form-label" data-i18n="subscription.start_date">Start Date</label>
+                            <input type="date" class="form-control" id="start_date" name="start_date" value="{{ now().strftime('%Y-%m-%d') }}">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="notes" class="form-label" data-i18n="subscription.notes">Notes</label>
+                        <textarea class="form-control" id="notes" name="notes" rows="3"></textarea>
+                    </div>
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-secondary me-md-2" data-i18n="general.cancel">Cancel</a>
+                        <button type="submit" class="btn btn-primary" data-i18n="general.save">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0" data-i18n="add_subscription.suggestions">Suggestions</h5>
+            </div>
+            <div class="card-body">
+                <p data-i18n="add_subscription.click_to_use">Click on a subscription to use its details:</p>
+                <div class="list-group">
+                    {% for sub in suggested_subscriptions %}
+                    <button type="button" class="list-group-item list-group-item-action"
+                            onclick="fillSubscriptionDetails('{{ sub.name }}', '{{ sub.url }}')">
+                        {{ sub.name }}
+                    </button>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function fillSubscriptionDetails(name, url) {
+        document.getElementById('name').value = name;
+        document.getElementById('url').value = url;
+        // Focus on the amount field for user to continue inputting
+        document.getElementById('amount').focus();
+    }
+</script>
+{% endblock %}

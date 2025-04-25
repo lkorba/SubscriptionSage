@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}Subscription Tracker - Manage Your Subscriptions{% endblock %}
+
+{% block content %}
+<div class="row align-items-center py-5">
+    <div class="col-md-6">
+        <h1 class="display-4 fw-bold mb-4" data-i18n="home.title">Track Your Subscriptions</h1>
+        <p class="lead mb-4" data-i18n="home.subtitle">Never miss a payment again. Organize all your subscriptions in one place.</p>
+        <ul class="list-unstyled mb-4">
+            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> <span data-i18n="home.feature1">Track subscriptions across multiple currencies</span></li>
+            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> <span data-i18n="home.feature2">Receive reminders before payments</span></li>
+            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> <span data-i18n="home.feature3">Generate spending reports</span></li>
+            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> <span data-i18n="home.feature4">Import/export subscription data</span></li>
+        </ul>
+        <div class="d-grid gap-2 d-md-flex">
+            <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg px-4 me-md-2" data-i18n="home.get_started">Get Started</a>
+            <a href="{{ url_for('login') }}" class="btn btn-outline-secondary btn-lg px-4" data-i18n="home.login">Login</a>
+        </div>
+    </div>
+    <div class="col-md-6 text-center">
+        <svg width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+            <!-- Calendar illustration -->
+            <rect x="100" y="50" width="200" height="200" rx="10" fill="#2a2a2a" stroke="#6c757d" stroke-width="2"/>
+            <rect x="100" y="50" width="200" height="40" rx="10" fill="#343a40" stroke="#6c757d" stroke-width="2"/>
+            
+            <!-- Calendar days -->
+            <circle cx="130" cy="120" r="15" fill="#198754" opacity="0.8"/>
+            <circle cx="170" cy="120" r="15" fill="#6c757d" opacity="0.5"/>
+            <circle cx="210" cy="120" r="15" fill="#6c757d" opacity="0.5"/>
+            <circle cx="250" cy="120" r="15" fill="#dc3545" opacity="0.8"/>
+            <circle cx="130" cy="160" r="15" fill="#6c757d" opacity="0.5"/>
+            <circle cx="170" cy="160" r="15" fill="#0d6efd" opacity="0.8"/>
+            <circle cx="210" cy="160" r="15" fill="#6c757d" opacity="0.5"/>
+            <circle cx="250" cy="160" r="15" fill="#6c757d" opacity="0.5"/>
+            <circle cx="130" cy="200" r="15" fill="#6c757d" opacity="0.5"/>
+            <circle cx="170" cy="200" r="15" fill="#6c757d" opacity="0.5"/>
+            <circle cx="210" cy="200" r="15" fill="#ffc107" opacity="0.8"/>
+            <circle cx="250" cy="200" r="15" fill="#6c757d" opacity="0.5"/>
+            
+            <!-- Text "2023" -->
+            <text x="200" y="75" text-anchor="middle" font-family="Arial" font-size="20" fill="white">2023</text>
+            
+            <!-- Notification bell -->
+            <path d="M310 100 C320 100, 330 110, 330 120 C330 140, 335 150, 345 160 L275 160 C285 150, 290 140, 290 120 C290 110, 300 100, 310 100" fill="#0d6efd" opacity="0.8"/>
+            <circle cx="310" cy="170" r="10" fill="#0d6efd" opacity="0.8"/>
+        </svg>
+    </div>
+</div>
+
+<div class="row py-5">
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-globe fa-3x text-primary mb-3"></i>
+                <h3 class="card-title" data-i18n="home.card1_title">Multi-Currency Support</h3>
+                <p class="card-text" data-i18n="home.card1_text">Track your subscriptions in USD, EUR, CZK, and PLN with automatic currency conversion.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-bell fa-3x text-warning mb-3"></i>
+                <h3 class="card-title" data-i18n="home.card2_title">Payment Reminders</h3>
+                <p class="card-text" data-i18n="home.card2_text">Get notified before your subscriptions renew so you never miss a payment.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-chart-pie fa-3x text-success mb-3"></i>
+                <h3 class="card-title" data-i18n="home.card3_title">Spending Analytics</h3>
+                <p class="card-text" data-i18n="home.card3_text">Visualize your subscription spending habits with detailed reports and charts.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,203 @@
+{
+  "app": {
+    "name": "Menedżer Subskrypcji"
+  },
+  "nav": {
+    "dashboard": "Panel",
+    "add_subscription": "Dodaj Subskrypcję",
+    "reports": "Raporty",
+    "settings": "Ustawienia",
+    "login": "Logowanie",
+    "register": "Rejestracja",
+    "logout": "Wyloguj"
+  },
+  "home": {
+    "title": "Śledź Swoje Subskrypcje",
+    "subtitle": "Nigdy więcej nie przegap płatności. Zorganizuj wszystkie subskrypcje w jednym miejscu.",
+    "feature1": "Śledź subskrypcje w wielu walutach",
+    "feature2": "Otrzymuj przypomnienia przed płatnościami",
+    "feature3": "Generuj raporty wydatków",
+    "feature4": "Importuj/eksportuj dane subskrypcji",
+    "get_started": "Rozpocznij",
+    "login": "Zaloguj się",
+    "card1_title": "Obsługa Wielu Walut",
+    "card1_text": "Śledź swoje subskrypcje w USD, EUR, CZK i PLN z automatyczną konwersją walut.",
+    "card2_title": "Przypomnienia o Płatnościach",
+    "card2_text": "Otrzymuj powiadomienia przed odnowieniem subskrypcji, aby nigdy nie przegapić płatności.",
+    "card3_title": "Analiza Wydatków",
+    "card3_text": "Wizualizuj swoje zwyczaje wydatkowe na subskrypcje za pomocą szczegółowych raportów i wykresów."
+  },
+  "login": {
+    "title": "Logowanie",
+    "username": "Nazwa użytkownika",
+    "password": "Hasło",
+    "submit": "Zaloguj się",
+    "no_account": "Nie masz konta?",
+    "register_link": "Zarejestruj się"
+  },
+  "register": {
+    "title": "Rejestracja",
+    "username": "Nazwa użytkownika",
+    "email": "Email",
+    "password": "Hasło",
+    "confirm_password": "Potwierdź hasło",
+    "language": "Preferowany język",
+    "preferred_currency": "Preferowana waluta",
+    "submit": "Zarejestruj się",
+    "has_account": "Masz już konto?",
+    "login_link": "Zaloguj się"
+  },
+  "dashboard": {
+    "title": "Panel",
+    "active_subscriptions": "Aktywne Subskrypcje",
+    "monthly_spending": "Miesięczne Wydatki",
+    "next_payment": "Następna Płatność",
+    "distribution": "Rozkład Subskrypcji",
+    "upcoming_payments": "Nadchodzące Płatności",
+    "my_subscriptions": "Moje Subskrypcje",
+    "add": "Dodaj",
+    "export": "Eksportuj",
+    "import": "Importuj",
+    "no_subscriptions": "Nie znaleziono subskrypcji",
+    "add_new_message": "Rozpocznij śledzenie swoich subskrypcji, dodając pierwszą.",
+    "add_first": "Dodaj Pierwszą Subskrypcję",
+    "confirm_delete": "Potwierdź Usunięcie",
+    "delete_confirmation": "Czy na pewno chcesz usunąć subskrypcję <strong>{{name}}</strong>? Tej akcji nie można cofnąć.",
+    "import_subscriptions": "Importuj Subskrypcje",
+    "select_csv": "Wybierz Plik CSV",
+    "upload_import": "Wgraj i Importuj",
+    "no_upcoming": "Brak nadchodzących płatności",
+    "billing_cycles": "Cykle Rozliczeniowe"
+  },
+  "add_subscription": {
+    "title": "Dodaj Nową Subskrypcję",
+    "suggestions": "Sugestie",
+    "click_to_use": "Kliknij na subskrypcję, aby użyć jej szczegółów:"
+  },
+  "edit_subscription": {
+    "title": "Edytuj Subskrypcję",
+    "reminders": "Przypomnienia o Płatnościach",
+    "reminders_info": "Skonfiguruj do 3 przypomnień przed datą płatności:",
+    "subscription_info": "Informacje o Subskrypcji",
+    "confirm_delete": "Potwierdź Usunięcie",
+    "delete_confirmation": "Czy na pewno chcesz usunąć subskrypcję <strong>{{name}}</strong>? Tej akcji nie można cofnąć."
+  },
+  "subscription": {
+    "name": "Nazwa",
+    "url": "URL",
+    "amount": "Kwota",
+    "currency": "Waluta",
+    "billing_cycle": "Cykl Rozliczeniowy",
+    "start_date": "Data Rozpoczęcia",
+    "next_payment": "Następna Płatność",
+    "notes": "Notatki",
+    "is_active": "Aktywna",
+    "status": "Status",
+    "actions": "Akcje",
+    "active": "Aktywna",
+    "inactive": "Nieaktywna",
+    "one_time": "Jednorazowa",
+    "created_at": "Utworzono:",
+    "updated_at": "Ostatnia aktualizacja:",
+    "delete": "Usuń Subskrypcję"
+  },
+  "reminder": {
+    "days_before": "Dni Przed Płatnością",
+    "notification_type": "Typ Powiadomienia",
+    "email": "Email",
+    "push": "Powiadomienie Push",
+    "remove": "Usuń Przypomnienie",
+    "add": "Dodaj Przypomnienie"
+  },
+  "reports": {
+    "title": "Raporty Subskrypcji",
+    "total_subscriptions": "Wszystkie Subskrypcje",
+    "monthly_spending": "Miesięczne Wydatki",
+    "yearly_spending": "Roczne Wydatki",
+    "monthly_by_cycle": "Miesięczne Wydatki według Cyklu Rozliczeniowego",
+    "upcoming_month": "Nadchodzące Płatności (Następne 30 Dni)",
+    "no_upcoming": "Brak nadchodzących płatności w ciągu najbliższych 30 dni",
+    "export_data": "Eksportuj Dane",
+    "csv_export": "Eksport CSV",
+    "csv_description": "Eksportuj swoje dane subskrypcji do pliku CSV do użytku w aplikacjach arkusza kalkulacyjnego.",
+    "download_csv": "Pobierz CSV",
+    "import_data": "Importuj Dane",
+    "import_description": "Wgraj plik CSV, aby zaimportować dane subskrypcji.",
+    "import_csv": "Importuj CSV",
+    "all_subscriptions": "Wszystkie Subskrypcje",
+    "monthly_cost": "Miesięczny Koszt",
+    "yearly_cost": "Roczny Koszt",
+    "no_subscriptions": "Nie znaleziono subskrypcji",
+    "add_new_message": "Rozpocznij śledzenie swoich subskrypcji, dodając pierwszą.",
+    "add_first": "Dodaj Pierwszą Subskrypcję",
+    "import_subscriptions": "Importuj Subskrypcje",
+    "select_csv": "Wybierz Plik CSV",
+    "upload_import": "Wgraj i Importuj",
+    "monthly_spending_in": "Miesięczne Wydatki ({{currency}})",
+    "amount_in": "Kwota ({{currency}})",
+    "monthly_spending_by_cycle": "Miesięczne Wydatki według Cyklu Rozliczeniowego"
+  },
+  "settings": {
+    "title": "Ustawienia Konta",
+    "profile": "Informacje o Profilu",
+    "username": "Nazwa użytkownika",
+    "email": "Email",
+    "preferences": "Preferencje",
+    "language": "Język",
+    "preferred_currency": "Preferowana Waluta",
+    "change_password": "Zmień Hasło",
+    "current_password": "Obecne Hasło",
+    "new_password": "Nowe Hasło",
+    "confirm_password": "Potwierdź Nowe Hasło"
+  },
+  "billing": {
+    "weekly": "Tygodniowo",
+    "monthly": "Miesięcznie",
+    "quarterly": "Kwartalnie",
+    "bi-annually": "Półrocznie",
+    "yearly": "Rocznie",
+    "lifetime": "Dożywotnio"
+  },
+  "currencies": {
+    "usd": "USD - Dolar Amerykański",
+    "eur": "EUR - Euro",
+    "czk": "CZK - Korona Czeska",
+    "pln": "PLN - Złoty Polski"
+  },
+  "languages": {
+    "english": "Angielski",
+    "polish": "Polski",
+    "czech": "Czeski"
+  },
+  "general": {
+    "cancel": "Anuluj",
+    "save": "Zapisz",
+    "delete": "Usuń",
+    "save_changes": "Zapisz Zmiany"
+  },
+  "errors": {
+    "page_not_found": "Strona Nie Znaleziona",
+    "page_not_found_message": "Strona, której szukasz, nie istnieje lub została przeniesiona.",
+    "server_error": "Błąd Serwera",
+    "server_error_message": "Coś poszło nie tak po naszej stronie. Spróbuj ponownie później.",
+    "back_home": "Powrót do Strony Głównej"
+  },
+  "footer": {
+    "text": "Menedżer Subskrypcji © 2023. Wszelkie prawa zastrzeżone."
+  },
+  "time": {
+    "just_now": "Właśnie teraz",
+    "in_minutes": "Za {{count}} minutę",
+    "in_minutes_plural": "Za {{count}} minut(y)",
+    "minutes_ago": "{{count}} minutę temu",
+    "minutes_ago_plural": "{{count}} minut(y) temu",
+    "in_hours": "Za {{count}} godzinę",
+    "in_hours_plural": "Za {{count}} godzin(y)",
+    "hours_ago": "{{count}} godzinę temu",
+    "hours_ago_plural": "{{count}} godzin(y) temu",
+    "in_days": "Za {{count}} dzień",
+    "in_days_plural": "Za {{count}} dni",
+    "days_ago": "{{count}} dzień temu",
+    "days_ago_plural": "{{count}} dni temu"
+  }
+}

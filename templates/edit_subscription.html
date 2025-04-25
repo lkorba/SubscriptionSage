@@ -1,0 +1,212 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Subscription - Subscription Tracker{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="mb-0" data-i18n="edit_subscription.title">Edit Subscription</h2>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('edit_subscription', id=subscription.id) }}">
+                    <div class="mb-3">
+                        <label for="name" class="form-label" data-i18n="subscription.name">Name</label>
+                        <input type="text" class="form-control" id="name" name="name" value="{{ subscription.name }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="url" class="form-label" data-i18n="subscription.url">URL</label>
+                        <input type="url" class="form-control" id="url" name="url" value="{{ subscription.url }}" placeholder="https://example.com">
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="amount" class="form-label" data-i18n="subscription.amount">Amount</label>
+                            <input type="number" class="form-control" id="amount" name="amount" step="0.01" min="0" value="{{ subscription.amount }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="currency" class="form-label" data-i18n="subscription.currency">Currency</label>
+                            <select class="form-select" id="currency" name="currency">
+                                <option value="USD" {% if subscription.currency == 'USD' %}selected{% endif %} data-i18n="currencies.usd">USD - US Dollar</option>
+                                <option value="EUR" {% if subscription.currency == 'EUR' %}selected{% endif %} data-i18n="currencies.eur">EUR - Euro</option>
+                                <option value="CZK" {% if subscription.currency == 'CZK' %}selected{% endif %} data-i18n="currencies.czk">CZK - Czech Koruna</option>
+                                <option value="PLN" {% if subscription.currency == 'PLN' %}selected{% endif %} data-i18n="currencies.pln">PLN - Polish Złoty</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="billing_cycle" class="form-label" data-i18n="subscription.billing_cycle">Billing Cycle</label>
+                            <select class="form-select" id="billing_cycle" name="billing_cycle" required>
+                                <option value="weekly" {% if subscription.billing_cycle == 'weekly' %}selected{% endif %} data-i18n="billing.weekly">Weekly</option>
+                                <option value="monthly" {% if subscription.billing_cycle == 'monthly' %}selected{% endif %} data-i18n="billing.monthly">Monthly</option>
+                                <option value="quarterly" {% if subscription.billing_cycle == 'quarterly' %}selected{% endif %} data-i18n="billing.quarterly">Quarterly</option>
+                                <option value="bi-annually" {% if subscription.billing_cycle == 'bi-annually' %}selected{% endif %} data-i18n="billing.bi-annually">Bi-annually</option>
+                                <option value="yearly" {% if subscription.billing_cycle == 'yearly' %}selected{% endif %} data-i18n="billing.yearly">Yearly</option>
+                                <option value="lifetime" {% if subscription.billing_cycle == 'lifetime' %}selected{% endif %} data-i18n="billing.lifetime">Lifetime</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="start_date" class="form-label" data-i18n="subscription.start_date">Start Date</label>
+                            <input type="date" class="form-control" id="start_date" name="start_date" value="{{ subscription.formatted_start_date }}">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="notes" class="form-label" data-i18n="subscription.notes">Notes</label>
+                        <textarea class="form-control" id="notes" name="notes" rows="3">{{ subscription.notes }}</textarea>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="is_active" name="is_active" {% if subscription.is_active %}checked{% endif %}>
+                        <label class="form-check-label" for="is_active" data-i18n="subscription.is_active">Active</label>
+                    </div>
+                    
+                    <!-- Reminders Section -->
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h5 class="mb-0" data-i18n="edit_subscription.reminders">Payment Reminders</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="reminders-container">
+                                <p data-i18n="edit_subscription.reminders_info">Configure up to 3 reminders before payment date:</p>
+                                
+                                <!-- Show existing reminders, or default values -->
+                                {% set reminder_count = reminders|length if reminders else 3 %}
+                                <input type="hidden" name="reminder_count" id="reminder_count" value="{{ reminder_count }}">
+                                
+                                {% for i in range(1, 4) %}
+                                    {% set reminder = reminders[i-1] if reminders and i <= reminders|length else None %}
+                                    <div class="card mb-2 reminder-card" id="reminder-{{ i }}" {% if i > reminder_count %}style="display: none;"{% endif %}>
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <label for="days_before_{{ i }}" class="form-label" data-i18n="reminder.days_before">Days Before Payment</label>
+                                                    <input type="number" class="form-control" id="days_before_{{ i }}" name="days_before_{{ i }}" 
+                                                           value="{{ reminder.days_before if reminder else [1, 7, 14][i-1] }}" min="1" max="30">
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label class="form-label" data-i18n="reminder.notification_type">Notification Type</label>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="email_notification_{{ i }}" name="email_notification_{{ i }}"
+                                                              {% if reminder is none or reminder.email_notification %}checked{% endif %}>
+                                                        <label class="form-check-label" for="email_notification_{{ i }}" data-i18n="reminder.email">Email</label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="push_notification_{{ i }}" name="push_notification_{{ i }}"
+                                                              {% if reminder and reminder.push_notification %}checked{% endif %}>
+                                                        <label class="form-check-label" for="push_notification_{{ i }}" data-i18n="reminder.push">Push Notification</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                                
+                                <div class="d-flex justify-content-between">
+                                    <button type="button" class="btn btn-sm btn-outline-danger" id="remove-reminder" {% if reminder_count <= 1 %}disabled{% endif %}>
+                                        <i class="fas fa-minus me-1"></i> <span data-i18n="reminder.remove">Remove Reminder</span>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-success" id="add-reminder" {% if reminder_count >= 3 %}disabled{% endif %}>
+                                        <i class="fas fa-plus me-1"></i> <span data-i18n="reminder.add">Add Reminder</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-secondary me-md-2" data-i18n="general.cancel">Cancel</a>
+                        <button type="submit" class="btn btn-primary" data-i18n="general.save">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0" data-i18n="edit_subscription.subscription_info">Subscription Info</h5>
+            </div>
+            <div class="card-body">
+                <p><strong data-i18n="subscription.created_at">Created:</strong> {{ subscription.created_at.strftime('%Y-%m-%d') }}</p>
+                <p><strong data-i18n="subscription.updated_at">Last Updated:</strong> {{ subscription.updated_at.strftime('%Y-%m-%d') }}</p>
+                
+                {% if subscription.next_payment_date %}
+                <div class="alert alert-info">
+                    <p class="mb-0"><strong data-i18n="subscription.next_payment">Next Payment:</strong> {{ subscription.next_payment_date.strftime('%Y-%m-%d') }}</p>
+                </div>
+                {% endif %}
+                
+                <div class="d-grid gap-2 mt-3">
+                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                        <i class="fas fa-trash me-1"></i> <span data-i18n="subscription.delete">Delete Subscription</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel" data-i18n="edit_subscription.confirm_delete">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p data-i18n="[html]edit_subscription.delete_confirmation" data-i18n-options='{"name": "{{ subscription.name }}"}'>
+                    Are you sure you want to delete the subscription <strong>{{ subscription.name }}</strong>? This action cannot be undone.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-i18n="general.cancel">Cancel</button>
+                <form action="{{ url_for('delete_subscription', id=subscription.id) }}" method="POST">
+                    <button type="submit" class="btn btn-danger" data-i18n="general.delete">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        let reminderCount = parseInt(document.getElementById('reminder_count').value);
+        const maxReminders = 3;
+        
+        // Add reminder button
+        document.getElementById('add-reminder').addEventListener('click', function() {
+            if (reminderCount < maxReminders) {
+                reminderCount++;
+                document.getElementById(`reminder-${reminderCount}`).style.display = 'block';
+                document.getElementById('reminder_count').value = reminderCount;
+                
+                // Update button states
+                updateReminderButtons();
+            }
+        });
+        
+        // Remove reminder button
+        document.getElementById('remove-reminder').addEventListener('click', function() {
+            if (reminderCount > 1) {
+                document.getElementById(`reminder-${reminderCount}`).style.display = 'none';
+                reminderCount--;
+                document.getElementById('reminder_count').value = reminderCount;
+                
+                // Update button states
+                updateReminderButtons();
+            }
+        });
+        
+        function updateReminderButtons() {
+            document.getElementById('add-reminder').disabled = (reminderCount >= maxReminders);
+            document.getElementById('remove-reminder').disabled = (reminderCount <= 1);
+        }
+        
+        // Initialize button states
+        updateReminderButtons();
+    });
+</script>
+{% endblock %}

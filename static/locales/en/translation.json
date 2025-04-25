@@ -1,0 +1,203 @@
+{
+  "app": {
+    "name": "Subscription Tracker"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "add_subscription": "Add Subscription",
+    "reports": "Reports",
+    "settings": "Settings",
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout"
+  },
+  "home": {
+    "title": "Track Your Subscriptions",
+    "subtitle": "Never miss a payment again. Organize all your subscriptions in one place.",
+    "feature1": "Track subscriptions across multiple currencies",
+    "feature2": "Receive reminders before payments",
+    "feature3": "Generate spending reports",
+    "feature4": "Import/export subscription data",
+    "get_started": "Get Started",
+    "login": "Login",
+    "card1_title": "Multi-Currency Support",
+    "card1_text": "Track your subscriptions in USD, EUR, CZK, and PLN with automatic currency conversion.",
+    "card2_title": "Payment Reminders",
+    "card2_text": "Get notified before your subscriptions renew so you never miss a payment.",
+    "card3_title": "Spending Analytics",
+    "card3_text": "Visualize your subscription spending habits with detailed reports and charts."
+  },
+  "login": {
+    "title": "Login",
+    "username": "Username",
+    "password": "Password",
+    "submit": "Login",
+    "no_account": "Don't have an account?",
+    "register_link": "Register"
+  },
+  "register": {
+    "title": "Register",
+    "username": "Username",
+    "email": "Email",
+    "password": "Password",
+    "confirm_password": "Confirm Password",
+    "language": "Preferred Language",
+    "preferred_currency": "Preferred Currency",
+    "submit": "Register",
+    "has_account": "Already have an account?",
+    "login_link": "Login"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "active_subscriptions": "Active Subscriptions",
+    "monthly_spending": "Monthly Spending",
+    "next_payment": "Next Payment",
+    "distribution": "Subscription Distribution",
+    "upcoming_payments": "Upcoming Payments",
+    "my_subscriptions": "My Subscriptions",
+    "add": "Add",
+    "export": "Export",
+    "import": "Import",
+    "no_subscriptions": "No subscriptions found",
+    "add_new_message": "Start tracking your subscriptions by adding your first one.",
+    "add_first": "Add Your First Subscription",
+    "confirm_delete": "Confirm Delete",
+    "delete_confirmation": "Are you sure you want to delete the subscription <strong>{{name}}</strong>? This action cannot be undone.",
+    "import_subscriptions": "Import Subscriptions",
+    "select_csv": "Select CSV File",
+    "upload_import": "Upload & Import",
+    "no_upcoming": "No upcoming payments",
+    "billing_cycles": "Billing Cycles"
+  },
+  "add_subscription": {
+    "title": "Add New Subscription",
+    "suggestions": "Suggestions",
+    "click_to_use": "Click on a subscription to use its details:"
+  },
+  "edit_subscription": {
+    "title": "Edit Subscription",
+    "reminders": "Payment Reminders",
+    "reminders_info": "Configure up to 3 reminders before payment date:",
+    "subscription_info": "Subscription Info",
+    "confirm_delete": "Confirm Delete",
+    "delete_confirmation": "Are you sure you want to delete the subscription <strong>{{name}}</strong>? This action cannot be undone."
+  },
+  "subscription": {
+    "name": "Name",
+    "url": "URL",
+    "amount": "Amount",
+    "currency": "Currency",
+    "billing_cycle": "Billing Cycle",
+    "start_date": "Start Date",
+    "next_payment": "Next Payment",
+    "notes": "Notes",
+    "is_active": "Active",
+    "status": "Status",
+    "actions": "Actions",
+    "active": "Active",
+    "inactive": "Inactive",
+    "one_time": "One Time",
+    "created_at": "Created:",
+    "updated_at": "Last Updated:",
+    "delete": "Delete Subscription"
+  },
+  "reminder": {
+    "days_before": "Days Before Payment",
+    "notification_type": "Notification Type",
+    "email": "Email",
+    "push": "Push Notification",
+    "remove": "Remove Reminder",
+    "add": "Add Reminder"
+  },
+  "reports": {
+    "title": "Subscription Reports",
+    "total_subscriptions": "Total Subscriptions",
+    "monthly_spending": "Monthly Spending",
+    "yearly_spending": "Yearly Spending",
+    "monthly_by_cycle": "Monthly Spending by Billing Cycle",
+    "upcoming_month": "Upcoming Payments (Next 30 Days)",
+    "no_upcoming": "No upcoming payments in the next 30 days",
+    "export_data": "Export Data",
+    "csv_export": "CSV Export",
+    "csv_description": "Export your subscription data to a CSV file for use in spreadsheet applications.",
+    "download_csv": "Download CSV",
+    "import_data": "Import Data",
+    "import_description": "Upload a CSV file to import subscription data.",
+    "import_csv": "Import CSV",
+    "all_subscriptions": "All Subscriptions",
+    "monthly_cost": "Monthly Cost",
+    "yearly_cost": "Yearly Cost",
+    "no_subscriptions": "No subscriptions found",
+    "add_new_message": "Start tracking your subscriptions by adding your first one.",
+    "add_first": "Add Your First Subscription",
+    "import_subscriptions": "Import Subscriptions",
+    "select_csv": "Select CSV File",
+    "upload_import": "Upload & Import",
+    "monthly_spending_in": "Monthly Spending ({{currency}})",
+    "amount_in": "Amount ({{currency}})",
+    "monthly_spending_by_cycle": "Monthly Spending by Billing Cycle"
+  },
+  "settings": {
+    "title": "Account Settings",
+    "profile": "Profile Information",
+    "username": "Username",
+    "email": "Email",
+    "preferences": "Preferences",
+    "language": "Language",
+    "preferred_currency": "Preferred Currency",
+    "change_password": "Change Password",
+    "current_password": "Current Password",
+    "new_password": "New Password",
+    "confirm_password": "Confirm New Password"
+  },
+  "billing": {
+    "weekly": "Weekly",
+    "monthly": "Monthly",
+    "quarterly": "Quarterly",
+    "bi-annually": "Bi-annually",
+    "yearly": "Yearly",
+    "lifetime": "Lifetime"
+  },
+  "currencies": {
+    "usd": "USD - US Dollar",
+    "eur": "EUR - Euro",
+    "czk": "CZK - Czech Koruna",
+    "pln": "PLN - Polish Złoty"
+  },
+  "languages": {
+    "english": "English",
+    "polish": "Polish",
+    "czech": "Czech"
+  },
+  "general": {
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "save_changes": "Save Changes"
+  },
+  "errors": {
+    "page_not_found": "Page Not Found",
+    "page_not_found_message": "The page you're looking for doesn't exist or has been moved.",
+    "server_error": "Server Error",
+    "server_error_message": "Something went wrong on our end. Please try again later.",
+    "back_home": "Back to Home"
+  },
+  "footer": {
+    "text": "Subscription Tracker © 2023. All rights reserved."
+  },
+  "time": {
+    "just_now": "Just now",
+    "in_minutes": "In {{count}} minute",
+    "in_minutes_plural": "In {{count}} minutes",
+    "minutes_ago": "{{count}} minute ago",
+    "minutes_ago_plural": "{{count}} minutes ago",
+    "in_hours": "In {{count}} hour",
+    "in_hours_plural": "In {{count}} hours",
+    "hours_ago": "{{count}} hour ago",
+    "hours_ago_plural": "{{count}} hours ago",
+    "in_days": "In {{count}} day",
+    "in_days_plural": "In {{count}} days",
+    "days_ago": "{{count}} day ago",
+    "days_ago_plural": "{{count}} days ago"
+  }
+}

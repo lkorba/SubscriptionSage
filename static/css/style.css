@@ -1,0 +1,219 @@
+/* Custom styles for Subscription Tracker */
+/* Using Bootstrap variables for consistency */
+
+/* Additional utility classes */
+.text-truncate-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.min-h-200 {
+  min-height: 200px;
+}
+
+/* Card enhancements */
+.card {
+  transition: transform 0.2s, box-shadow 0.2s;
+  margin-bottom: 1rem;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.card-header {
+  font-weight: 500;
+}
+
+/* Dashboard cards */
+.dashboard-stat-card {
+  text-align: center;
+  padding: 1.5rem;
+}
+
+.dashboard-stat-card .card-title {
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+
+.dashboard-stat-card .display-4 {
+  font-weight: 500;
+}
+
+/* Subscription list styles */
+.subscription-item {
+  transition: background-color 0.2s;
+}
+
+.subscription-item:hover {
+  background-color: var(--bs-dark);
+}
+
+.subscription-name {
+  font-weight: 500;
+}
+
+.subscription-price {
+  font-weight: 500;
+  color: var(--bs-info);
+}
+
+/* Status badges */
+.badge.badge-active {
+  background-color: var(--bs-success);
+}
+
+.badge.badge-inactive {
+  background-color: var(--bs-secondary);
+}
+
+.badge.badge-expiring {
+  background-color: var(--bs-warning);
+}
+
+/* Form improvements */
+.form-floating > .form-control:focus ~ label,
+.form-floating > .form-control:not(:placeholder-shown) ~ label {
+  color: var(--bs-primary);
+  opacity: 0.8;
+}
+
+/* Date picker custom styling */
+input[type="date"] {
+  background-color: var(--bs-dark);
+  color: var(--bs-light);
+  border-color: var(--bs-secondary);
+}
+
+/* Chart container */
+.chart-container {
+  position: relative;
+  min-height: 300px;
+  width: 100%;
+}
+
+/* Custom currency display */
+.currency-display {
+  font-family: monospace;
+  padding: 0.25rem 0.5rem;
+  background-color: rgba(33, 37, 41, 0.5);
+  border-radius: 0.25rem;
+}
+
+/* Custom alert styling */
+.alert-payment-due {
+  color: #fff;
+  background-color: var(--bs-danger);
+  border-color: rgba(220, 53, 69, 0.5);
+}
+
+.alert-payment-upcoming {
+  color: #fff;
+  background-color: var(--bs-warning);
+  border-color: rgba(255, 193, 7, 0.5);
+}
+
+/* Footer styling */
+.footer {
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-top: 1px solid var(--bs-dark);
+}
+
+/* Language switcher */
+.language-switcher .dropdown-item {
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+}
+
+.language-switcher .dropdown-item:hover {
+  background-color: var(--bs-dark);
+}
+
+/* Reminders UI */
+.reminder-card {
+  border-left: 4px solid var(--bs-info);
+}
+
+/* Logo styling */
+.navbar-brand {
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .display-4 {
+    font-size: 2rem;
+  }
+  
+  .card-title {
+    font-size: 1.2rem;
+  }
+  
+  .table-responsive {
+    font-size: 0.9rem;
+  }
+}
+
+/* Print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  .table {
+    border-collapse: collapse !important;
+  }
+  
+  .table td, .table th {
+    background-color: #fff !important;
+    color: #000 !important;
+    border: 1px solid #ddd !important;
+  }
+  
+  body {
+    min-width: 992px !important;
+  }
+}
+
+/* Animation for notifications */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 40px, 0);
+  }
+  
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.fade-in-up {
+  animation-name: fadeInUp;
+  animation-duration: 0.5s;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1a1a1a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #444;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}

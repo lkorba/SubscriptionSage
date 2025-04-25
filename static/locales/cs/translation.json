@@ -1,0 +1,203 @@
+{
+  "app": {
+    "name": "Správce předplatného"
+  },
+  "nav": {
+    "dashboard": "Nástěnka",
+    "add_subscription": "Přidat předplatné",
+    "reports": "Reporty",
+    "settings": "Nastavení",
+    "login": "Přihlášení",
+    "register": "Registrace",
+    "logout": "Odhlásit"
+  },
+  "home": {
+    "title": "Sledujte své předplatné",
+    "subtitle": "Už nikdy nezmeškejte platbu. Organizujte všechna svá předplatná na jednom místě.",
+    "feature1": "Sledujte předplatná v různých měnách",
+    "feature2": "Dostávejte upozornění před platbami",
+    "feature3": "Generujte reporty výdajů",
+    "feature4": "Importujte/exportujte data předplatných",
+    "get_started": "Začít",
+    "login": "Přihlásit se",
+    "card1_title": "Podpora více měn",
+    "card1_text": "Sledujte své předplatné v USD, EUR, CZK a PLN s automatickou konverzí měn.",
+    "card2_title": "Připomenutí plateb",
+    "card2_text": "Dostávejte upozornění před obnovením předplatného, abyste nikdy nezmeškali platbu.",
+    "card3_title": "Analýza výdajů",
+    "card3_text": "Vizualizujte své výdaje na předplatné pomocí podrobných reportů a grafů."
+  },
+  "login": {
+    "title": "Přihlášení",
+    "username": "Uživatelské jméno",
+    "password": "Heslo",
+    "submit": "Přihlásit se",
+    "no_account": "Nemáte účet?",
+    "register_link": "Registrovat se"
+  },
+  "register": {
+    "title": "Registrace",
+    "username": "Uživatelské jméno",
+    "email": "Email",
+    "password": "Heslo",
+    "confirm_password": "Potvrdit heslo",
+    "language": "Preferovaný jazyk",
+    "preferred_currency": "Preferovaná měna",
+    "submit": "Registrovat se",
+    "has_account": "Máte již účet?",
+    "login_link": "Přihlásit se"
+  },
+  "dashboard": {
+    "title": "Nástěnka",
+    "active_subscriptions": "Aktivní předplatná",
+    "monthly_spending": "Měsíční výdaje",
+    "next_payment": "Další platba",
+    "distribution": "Rozložení předplatných",
+    "upcoming_payments": "Nadcházející platby",
+    "my_subscriptions": "Moje předplatná",
+    "add": "Přidat",
+    "export": "Export",
+    "import": "Import",
+    "no_subscriptions": "Nenalezena žádná předplatná",
+    "add_new_message": "Začněte sledovat svá předplatná přidáním prvního.",
+    "add_first": "Přidat první předplatné",
+    "confirm_delete": "Potvrdit smazání",
+    "delete_confirmation": "Opravdu chcete smazat předplatné <strong>{{name}}</strong>? Tuto akci nelze vrátit zpět.",
+    "import_subscriptions": "Importovat předplatná",
+    "select_csv": "Vyberte soubor CSV",
+    "upload_import": "Nahrát a importovat",
+    "no_upcoming": "Žádné nadcházející platby",
+    "billing_cycles": "Fakturační cykly"
+  },
+  "add_subscription": {
+    "title": "Přidat nové předplatné",
+    "suggestions": "Návrhy",
+    "click_to_use": "Klikněte na předplatné pro použití jeho údajů:"
+  },
+  "edit_subscription": {
+    "title": "Upravit předplatné",
+    "reminders": "Připomenutí plateb",
+    "reminders_info": "Nastavte až 3 připomenutí před datem platby:",
+    "subscription_info": "Informace o předplatném",
+    "confirm_delete": "Potvrdit smazání",
+    "delete_confirmation": "Opravdu chcete smazat předplatné <strong>{{name}}</strong>? Tuto akci nelze vrátit zpět."
+  },
+  "subscription": {
+    "name": "Název",
+    "url": "URL",
+    "amount": "Částka",
+    "currency": "Měna",
+    "billing_cycle": "Fakturační cyklus",
+    "start_date": "Datum zahájení",
+    "next_payment": "Další platba",
+    "notes": "Poznámky",
+    "is_active": "Aktivní",
+    "status": "Stav",
+    "actions": "Akce",
+    "active": "Aktivní",
+    "inactive": "Neaktivní",
+    "one_time": "Jednorázové",
+    "created_at": "Vytvořeno:",
+    "updated_at": "Poslední aktualizace:",
+    "delete": "Smazat předplatné"
+  },
+  "reminder": {
+    "days_before": "Dny před platbou",
+    "notification_type": "Typ oznámení",
+    "email": "Email",
+    "push": "Push oznámení",
+    "remove": "Odebrat připomenutí",
+    "add": "Přidat připomenutí"
+  },
+  "reports": {
+    "title": "Reporty předplatných",
+    "total_subscriptions": "Celkem předplatných",
+    "monthly_spending": "Měsíční výdaje",
+    "yearly_spending": "Roční výdaje",
+    "monthly_by_cycle": "Měsíční výdaje podle fakturačního cyklu",
+    "upcoming_month": "Nadcházející platby (příštích 30 dní)",
+    "no_upcoming": "Žádné nadcházející platby v příštích 30 dnech",
+    "export_data": "Exportovat data",
+    "csv_export": "Export CSV",
+    "csv_description": "Exportujte data svých předplatných do souboru CSV pro použití v tabulkových aplikacích.",
+    "download_csv": "Stáhnout CSV",
+    "import_data": "Importovat data",
+    "import_description": "Nahrajte soubor CSV pro import dat předplatných.",
+    "import_csv": "Importovat CSV",
+    "all_subscriptions": "Všechna předplatná",
+    "monthly_cost": "Měsíční náklady",
+    "yearly_cost": "Roční náklady",
+    "no_subscriptions": "Nenalezena žádná předplatná",
+    "add_new_message": "Začněte sledovat svá předplatná přidáním prvního.",
+    "add_first": "Přidat první předplatné",
+    "import_subscriptions": "Importovat předplatná",
+    "select_csv": "Vyberte soubor CSV",
+    "upload_import": "Nahrát a importovat",
+    "monthly_spending_in": "Měsíční výdaje ({{currency}})",
+    "amount_in": "Částka ({{currency}})",
+    "monthly_spending_by_cycle": "Měsíční výdaje podle fakturačního cyklu"
+  },
+  "settings": {
+    "title": "Nastavení účtu",
+    "profile": "Informace o profilu",
+    "username": "Uživatelské jméno",
+    "email": "Email",
+    "preferences": "Preference",
+    "language": "Jazyk",
+    "preferred_currency": "Preferovaná měna",
+    "change_password": "Změnit heslo",
+    "current_password": "Současné heslo",
+    "new_password": "Nové heslo",
+    "confirm_password": "Potvrdit nové heslo"
+  },
+  "billing": {
+    "weekly": "Týdně",
+    "monthly": "Měsíčně",
+    "quarterly": "Čtvrtletně",
+    "bi-annually": "Pololetně",
+    "yearly": "Ročně",
+    "lifetime": "Doživotně"
+  },
+  "currencies": {
+    "usd": "USD - Americký dolar",
+    "eur": "EUR - Euro",
+    "czk": "CZK - Česká koruna",
+    "pln": "PLN - Polský zlotý"
+  },
+  "languages": {
+    "english": "Angličtina",
+    "polish": "Polština",
+    "czech": "Čeština"
+  },
+  "general": {
+    "cancel": "Zrušit",
+    "save": "Uložit",
+    "delete": "Smazat",
+    "save_changes": "Uložit změny"
+  },
+  "errors": {
+    "page_not_found": "Stránka nenalezena",
+    "page_not_found_message": "Stránka, kterou hledáte, neexistuje nebo byla přesunuta.",
+    "server_error": "Chyba serveru",
+    "server_error_message": "Na naší straně došlo k chybě. Zkuste to prosím později.",
+    "back_home": "Zpět na domovskou stránku"
+  },
+  "footer": {
+    "text": "Správce předplatného © 2023. Všechna práva vyhrazena."
+  },
+  "time": {
+    "just_now": "Právě teď",
+    "in_minutes": "Za {{count}} minutu",
+    "in_minutes_plural": "Za {{count}} minut",
+    "minutes_ago": "Před {{count}} minutou",
+    "minutes_ago_plural": "Před {{count}} minutami",
+    "in_hours": "Za {{count}} hodinu",
+    "in_hours_plural": "Za {{count}} hodin",
+    "hours_ago": "Před {{count}} hodinou",
+    "hours_ago_plural": "Před {{count}} hodinami",
+    "in_days": "Za {{count}} den",
+    "in_days_plural": "Za {{count}} dní",
+    "days_ago": "Před {{count}} dnem",
+    "days_ago_plural": "Před {{count}} dny"
+  }
+}
