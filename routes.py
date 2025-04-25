@@ -187,10 +187,15 @@ def add_subscription():
         
         start_date = datetime.strptime(start_date_str, '%Y-%m-%d') if start_date_str else datetime.utcnow()
         
+        # Get logo URL based on subscription name
+        from utils import get_logo_url_for_service
+        logo_url = get_logo_url_for_service(name)
+        
         subscription = Subscription(
             user_id=current_user.id,
             name=name,
             url=url,
+            logo_url=logo_url,
             amount=amount,
             currency=currency,
             billing_cycle=billing_cycle,
@@ -226,6 +231,9 @@ def edit_subscription(id):
     subscription = Subscription.query.filter_by(id=id, user_id=current_user.id).first_or_404()
     
     if request.method == 'POST':
+        # Get the old name to check if it changed
+        old_name = subscription.name
+        
         subscription.name = request.form['name']
         subscription.url = request.form['url']
         subscription.amount = float(request.form['amount']) if request.form['amount'] else 0.0
@@ -236,6 +244,11 @@ def edit_subscription(id):
         subscription.is_active = 'is_active' in request.form
         
         subscription.start_date = datetime.strptime(start_date_str, '%Y-%m-%d') if start_date_str else subscription.start_date
+        
+        # Update logo URL if name changed
+        if old_name != subscription.name:
+            from utils import get_logo_url_for_service
+            subscription.logo_url = get_logo_url_for_service(subscription.name)
         
         # Recalculate next payment date
         subscription.calculate_next_payment_date()

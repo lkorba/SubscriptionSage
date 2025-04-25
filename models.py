@@ -33,6 +33,7 @@ class Subscription(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     name = db.Column(db.String(120), nullable=False)
     url = db.Column(db.String(255))
+    logo_url = db.Column(db.String(255))  # URL to the subscription's logo or icon
     amount = db.Column(db.Float, default=0.0)
     currency = db.Column(db.String(3), default="USD")
     billing_cycle = db.Column(db.String(20), nullable=False)  # weekly, monthly, quarterly, bi-annually, yearly, lifetime
