@@ -278,3 +278,86 @@ def update_subscription_logos():
             subscription.logo_url = get_logo_url_for_service(subscription.name)
     
     db.session.commit()
+
+def handle_image_upload(file, subscription_id):
+    """
+    Process image uploads for subscription logos
+    - Validates file type
+    - Resizes to max 200x200 px
+    - Ensures file size is under 50KB
+    - Saves to static/uploads directory with unique name
+    
+    Returns the URL path to the saved image or None if failed
+    """
+    import os
+    from PIL import Image
+    from io import BytesIO
+    import uuid
+    
+    # Validate file extension
+    allowed_extensions = {'png', 'jpg', 'jpeg', 'gif', 'webp', 'svg'}
+    if not file.filename or '.' not in file.filename:
+        return None
+        
+    extension = file.filename.rsplit('.', 1)[1].lower()
+    if extension not in allowed_extensions:
+        return None
+    
+    # For SVG files, just save them directly (no resizing needed)
+    if extension == 'svg':
+        # Generate unique filename
+        unique_filename = f"{subscription_id}_{uuid.uuid4().hex}.{extension}"
+        upload_path = os.path.join('static', 'uploads', unique_filename)
+        
+        # Ensure file size is under 50KB (51200 bytes)
+        file_content = file.read()
+        if len(file_content) > 51200:
+            return None
+            
+        # Save the file
+        with open(upload_path, 'wb') as f:
+            f.write(file_content)
+            
+        return f"/{upload_path}"  # Return relative URL path
+    
+    # For other image types, resize if needed
+    try:
+        # Read the image
+        img = Image.open(BytesIO(file.read()))
+        
+        # Resize if larger than 200x200
+        if img.width > 200 or img.height > 200:
+            img.thumbnail((200, 200))
+        
+        # Save to memory to check size
+        img_byte_arr = BytesIO()
+        img.save(img_byte_arr, format=img.format or 'PNG')
+        img_byte_arr.seek(0)
+        
+        # Check if file size is under 50KB
+        if img_byte_arr.getbuffer().nbytes > 51200:  # 50KB in bytes
+            # If too large, compress more aggressively
+            quality = 85
+            while img_byte_arr.getbuffer().nbytes > 51200 and quality > 20:
+                img_byte_arr = BytesIO()
+                img.save(img_byte_arr, format='JPEG', quality=quality, optimize=True)
+                img_byte_arr.seek(0)
+                quality -= 15
+            
+            # If still too large after compression
+            if img_byte_arr.getbuffer().nbytes > 51200:
+                return None
+        
+        # Generate unique filename
+        unique_filename = f"{subscription_id}_{uuid.uuid4().hex}.{extension}"
+        upload_path = os.path.join('static', 'uploads', unique_filename)
+        
+        # Save the file
+        with open(upload_path, 'wb') as f:
+            f.write(img_byte_arr.getvalue())
+        
+        return f"/{upload_path}"  # Return relative URL path
+    
+    except Exception as e:
+        logger.error(f"Error processing uploaded image: {str(e)}")
+        return None

@@ -10,7 +10,7 @@
                 <h2 class="mb-0" data-i18n="add_subscription.title">Add New Subscription</h2>
             </div>
             <div class="card-body">
-                <form method="POST" action="{{ url_for('add_subscription') }}">
+                <form method="POST" action="{{ url_for('add_subscription') }}" enctype="multipart/form-data">
                     <div class="mb-3">
                         <label for="name" class="form-label" data-i18n="subscription.name">Name</label>
                         <input type="text" class="form-control" id="name" name="name" required>
@@ -18,6 +18,11 @@
                     <div class="mb-3">
                         <label for="url" class="form-label" data-i18n="subscription.url">URL</label>
                         <input type="url" class="form-control" id="url" name="url" placeholder="https://example.com">
+                    </div>
+                    <div class="mb-3">
+                        <label for="logo" class="form-label" data-i18n="subscription.logo">Logo</label>
+                        <input type="file" class="form-control" id="logo" name="logo" accept="image/*">
+                        <div class="form-text" data-i18n="subscription.logo_help">Optional. Max size: 200x200px, 50KB.</div>
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-6">

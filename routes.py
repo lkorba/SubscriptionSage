@@ -187,9 +187,23 @@ def add_subscription():
         
         start_date = datetime.strptime(start_date_str, '%Y-%m-%d') if start_date_str else datetime.utcnow()
         
-        # Get logo URL based on subscription name
-        from utils import get_logo_url_for_service
-        logo_url = get_logo_url_for_service(name)
+        # Handle logo upload if provided
+        logo_url = None
+        if 'logo' in request.files and request.files['logo'].filename:
+            from utils import handle_image_upload
+            # Generate a temporary ID for the file name (will be replaced with actual ID after DB insert)
+            temp_id = f"temp_{int(datetime.now().timestamp())}"
+            logo_url = handle_image_upload(request.files['logo'], temp_id)
+            
+            if not logo_url:
+                flash('Logo upload failed. Please ensure it is a valid image under 50KB and 200x200px.', 'warning')
+                # If upload fails, use the default logo
+                from utils import get_logo_url_for_service
+                logo_url = get_logo_url_for_service(name)
+        else:
+            # Use default logo based on service name
+            from utils import get_logo_url_for_service
+            logo_url = get_logo_url_for_service(name)
         
         subscription = Subscription(
             user_id=current_user.id,
@@ -250,8 +264,18 @@ def edit_subscription(id):
         
         subscription.start_date = datetime.strptime(start_date_str, '%Y-%m-%d') if start_date_str else subscription.start_date
         
-        # Update logo URL if name changed
-        if old_name != subscription.name:
+        # Handle logo upload if provided
+        keep_logo = 'keep_logo' in request.form
+        if 'logo' in request.files and request.files['logo'].filename:
+            from utils import handle_image_upload
+            logo_url = handle_image_upload(request.files['logo'], subscription.id)
+            
+            if logo_url:
+                subscription.logo_url = logo_url
+            else:
+                flash('Logo upload failed. Please ensure it is a valid image under 50KB and 200x200px.', 'warning')
+        # Update logo URL if name changed and user didn't choose to keep the logo
+        elif old_name != subscription.name and not keep_logo:
             from utils import get_logo_url_for_service
             subscription.logo_url = get_logo_url_for_service(subscription.name)
         
