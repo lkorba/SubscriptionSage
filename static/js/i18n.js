@@ -2,8 +2,8 @@
 document.addEventListener('DOMContentLoaded', function() {
   // Initialize i18next
   i18next
-    .use(i18nextBrowserLanguageDetector)
-    .use(i18nextHttpBackend)
+    .use(window.i18nextBrowserLanguageDetector)
+    .use(window.i18nextHttpBackend)
     .init({
       fallbackLng: 'en',
       debug: false,
@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     }, function(err, t) {
       // Initialize jQuery-i18next
-      jqueryI18next.init(i18next, $, {
+      window.jqueryI18next.init(i18next, $, {
         handleName: 'i18n'
       });
       
