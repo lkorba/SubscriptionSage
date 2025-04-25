@@ -209,7 +209,12 @@ def add_subscription():
     # Get suggested subscriptions
     suggested_subscriptions = DEFAULT_SUBSCRIPTIONS
     
-    return render_template('add_subscription.html', suggested_subscriptions=suggested_subscriptions)
+    # Pass today's date for the start_date field
+    today = datetime.now().strftime('%Y-%m-%d')
+    
+    return render_template('add_subscription.html', 
+                          suggested_subscriptions=suggested_subscriptions,
+                          today=today)
 
 @app.route('/subscriptions/edit/<int:id>', methods=['GET', 'POST'])
 @login_required
