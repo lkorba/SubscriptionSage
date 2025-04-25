@@ -64,7 +64,7 @@
                     <div class="list-group-item list-group-item-action">
                         <div class="d-flex w-100 justify-content-between">
                             <h5 class="mb-1">{{ payment.name }}</h5>
-                            <span class="badge {% if payment.next_payment_date.date() <= now().date() + timedelta(days=7) %}bg-danger{% else %}bg-primary{% endif %}">
+                            <span class="badge {% if payment.next_payment_date.date() <= current_datetime.date() + timedelta(days=7) %}bg-danger{% else %}bg-primary{% endif %}">
                                 {{ payment.next_payment_date.strftime('%Y-%m-%d') }}
                             </span>
                         </div>
