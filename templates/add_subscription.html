@@ -74,7 +74,12 @@
                     {% for sub in suggested_subscriptions %}
                     <button type="button" class="list-group-item list-group-item-action"
                             onclick="fillSubscriptionDetails('{{ sub.name }}', '{{ sub.url }}')">
-                        {{ sub.name }}
+                        <div class="d-flex align-items-center">
+                            {% if sub.logo_url %}
+                            <img src="{{ sub.logo_url }}" alt="{{ sub.name }} logo" class="me-2" width="24" height="24">
+                            {% endif %}
+                            <span>{{ sub.name }}</span>
+                        </div>
                     </button>
                     {% endfor %}
                 </div>

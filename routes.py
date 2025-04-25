@@ -216,7 +216,12 @@ def add_subscription():
         return redirect(url_for('dashboard'))
     
     # Get suggested subscriptions
-    suggested_subscriptions = DEFAULT_SUBSCRIPTIONS
+    suggested_subscriptions = DEFAULT_SUBSCRIPTIONS.copy()
+    
+    # Add logo URLs to suggested subscriptions
+    from utils import get_logo_url_for_service
+    for sub in suggested_subscriptions:
+        sub['logo_url'] = get_logo_url_for_service(sub['name'])
     
     # Pass today's date for the start_date field
     today = datetime.now().strftime('%Y-%m-%d')
