@@ -258,7 +258,7 @@ def get_logo_url_for_service(service_name, url=None):
         'bolt': 'https://www.google.com/s2/favicons?domain=bolt.new&sz=64',
         'cursor': 'https://www.google.com/s2/favicons?domain=cursor.sh&sz=64',
         'gitlab': 'https://gitlab.com/favicon.ico',
-        'granola': 'https://granola.app/favicon.ico',
+        'granola': 'https://www.google.com/s2/favicons?domain=granola.ai&sz=64',
         'linear': 'https://www.google.com/s2/favicons?domain=linear.app&sz=64',
         'lovable': 'https://lovable.ai/favicon.ico',
         'notability': 'https://notability.com/favicon.ico',

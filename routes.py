@@ -18,7 +18,7 @@ DEFAULT_SUBSCRIPTIONS = [
     {"name": "Cursor", "url": "https://cursor.sh/"},
     {"name": "GitHub", "url": "https://github.com/"},
     {"name": "GitLab", "url": "https://gitlab.com/"},
-    {"name": "Granola", "url": "https://granola.app/"},
+    {"name": "Granola", "url": "https://granola.ai/"},
     {"name": "Linear", "url": "https://linear.app/"},
     {"name": "Lovable", "url": "https://lovable.ai/"},
     {"name": "Netflix", "url": "https://www.netflix.com/"},
