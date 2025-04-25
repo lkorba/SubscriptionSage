@@ -1,80 +1,115 @@
-// i18next initialization and configuration
+// Simple translation system
 document.addEventListener('DOMContentLoaded', function() {
-  // Initialize i18next
-  i18next
-    .use(window.i18nextBrowserLanguageDetector)
-    .use(window.i18nextHttpBackend)
-    .init({
-      fallbackLng: 'en',
-      debug: false,
-      detection: {
-        order: ['querystring', 'cookie', 'localStorage', 'navigator'],
-        lookupQuerystring: 'lang',
-        lookupCookie: 'i18next',
-        lookupLocalStorage: 'i18nextLng',
-        caches: ['localStorage', 'cookie']
-      },
-      backend: {
-        loadPath: '/static/locales/{{lng}}/translation.json'
-      }
-    }, function(err, t) {
-      // Initialize jQuery-i18next
-      window.jqueryI18next.init(i18next, $, {
-        handleName: 'i18n'
-      });
-      
-      updateContent();
-      
-      // If user is logged in, set the language to their preference
-      const userLang = document.querySelector('meta[name="user-language"]')?.content;
-      if (userLang && userLang !== i18next.language) {
-        changeLanguage(userLang);
-      }
-    });
+  // Default language
+  let currentLanguage = 'en';
   
-  // Function to update content when language changes
-  function updateContent() {
-    // Update document title if there's a title key
-    const titleKey = $('title').attr('data-i18n');
-    if (titleKey) {
-      document.title = i18next.t(titleKey);
-    }
-    
-    // Localize DOM elements
-    $('[data-i18n]').i18n();
-    
-    // Update language dropdown
-    const currentLang = document.getElementById('current-language');
-    if (currentLang) {
-      currentLang.textContent = {
-        'en': 'English',
-        'pl': 'Polski',
-        'cs': 'Čeština'
-      }[i18next.language] || 'English';
-    }
-    
-    // Trigger a custom event for other components to react to language changes
-    document.dispatchEvent(new CustomEvent('languageChanged', { 
-      detail: { language: i18next.language } 
-    }));
+  // Try to get language from localStorage
+  const storedLanguage = localStorage.getItem('language');
+  if (storedLanguage) {
+    currentLanguage = storedLanguage;
   }
   
-  // Listen for language changes
-  i18next.on('languageChanged', () => {
-    updateContent();
-  });
+  // Try to get language from user preferences if logged in
+  const userLang = document.querySelector('meta[name="user-language"]')?.content;
+  if (userLang) {
+    currentLanguage = userLang;
+  }
   
-  // Expose the changeLanguage function globally
+  // Update UI with current language
+  updateLanguageUI(currentLanguage);
+  
+  // Load translations
+  loadTranslations(currentLanguage);
+  
+  // Global change language function
   window.changeLanguage = function(lang) {
-    i18next.changeLanguage(lang);
+    if (lang && (lang === 'en' || lang === 'pl' || lang === 'cs')) {
+      currentLanguage = lang;
+      localStorage.setItem('language', lang);
+      
+      // Update UI and load translations
+      updateLanguageUI(lang);
+      loadTranslations(lang);
+      
+      // If user is logged in, save preference
+      const saveLanguageUrl = document.querySelector('meta[name="save-language-url"]')?.content;
+      if (saveLanguageUrl) {
+        fetch(saveLanguageUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': document.querySelector('meta[name="csrf-token"]')?.content
+          },
+          body: JSON.stringify({ language: lang })
+        });
+      }
+    }
   };
+  
+  // Helper function to update language UI elements
+  function updateLanguageUI(lang) {
+    const languageNames = {
+      'en': 'English',
+      'pl': 'Polski',
+      'cs': 'Čeština'
+    };
+    
+    const currentLangElem = document.getElementById('current-language');
+    if (currentLangElem) {
+      currentLangElem.textContent = languageNames[lang] || 'English';
+    }
+  }
+  
+  // Load and apply translations
+  function loadTranslations(lang) {
+    fetch(`/static/locales/${lang}/translation.json`)
+      .then(response => response.json())
+      .then(translations => {
+        applyTranslations(translations);
+        
+        // Trigger custom event for other components
+        document.dispatchEvent(new CustomEvent('languageChanged', { 
+          detail: { language: lang } 
+        }));
+      })
+      .catch(error => {
+        console.error('Error loading translations:', error);
+      });
+  }
+  
+  // Apply translations to elements with data-i18n attribute
+  function applyTranslations(translations) {
+    // Get all elements with data-i18n attribute
+    const elements = document.querySelectorAll('[data-i18n]');
+    
+    elements.forEach(element => {
+      const key = element.getAttribute('data-i18n');
+      const translation = getNestedTranslation(translations, key);
+      
+      if (translation) {
+        // If the element is an input with placeholder, set the placeholder
+        if (element.tagName === 'INPUT' && element.hasAttribute('placeholder')) {
+          element.placeholder = translation;
+        } 
+        // Otherwise set the text content
+        else {
+          element.textContent = translation;
+        }
+      }
+    });
+  }
+  
+  // Get nested translation by dot notation
+  function getNestedTranslation(obj, path) {
+    return path.split('.').reduce((p, c) => (p && p[c]) ? p[c] : null, obj);
+  }
 });
 
-// Helper function to format dates according to current language
+// Helper function to format dates
 function formatDate(date, format) {
   if (!date) return '';
   
-  const lang = i18next.language;
+  const lang = localStorage.getItem('language') || 'en';
   let options = {};
   
   switch(format) {
@@ -84,9 +119,6 @@ function formatDate(date, format) {
     case 'long':
       options = { year: 'numeric', month: 'long', day: 'numeric' };
       break;
-    case 'relative':
-      // For relative time, we'll use a custom implementation
-      return getRelativeTimeString(date, lang);
     default:
       options = { year: 'numeric', month: 'numeric', day: 'numeric' };
   }
@@ -94,11 +126,11 @@ function formatDate(date, format) {
   return new Date(date).toLocaleDateString(lang, options);
 }
 
-// Helper function to format currency according to current language and currency
-function formatCurrencyI18n(amount, currency) {
+// Helper function to format currency
+function formatCurrency(amount, currency) {
   if (amount === null || amount === undefined) return '';
   
-  const lang = i18next.language;
+  const lang = localStorage.getItem('language') || 'en';
   const formatter = new Intl.NumberFormat(lang, {
     style: 'currency',
     currency: currency,
@@ -108,36 +140,8 @@ function formatCurrencyI18n(amount, currency) {
   return formatter.format(amount);
 }
 
-// Helper function for relative time formatting
-function getRelativeTimeString(date, lang) {
-  const now = new Date();
-  const dateObj = new Date(date);
-  const diffMs = dateObj - now;
-  const diffSec = Math.round(diffMs / 1000);
-  const diffMin = Math.round(diffSec / 60);
-  const diffHour = Math.round(diffMin / 60);
-  const diffDay = Math.round(diffHour / 24);
-  
-  // Use i18next for translations
-  if (diffDay > 0) {
-    return i18next.t('time.in_days', { count: diffDay });
-  } else if (diffDay < 0) {
-    return i18next.t('time.days_ago', { count: Math.abs(diffDay) });
-  } else if (diffHour > 0) {
-    return i18next.t('time.in_hours', { count: diffHour });
-  } else if (diffHour < 0) {
-    return i18next.t('time.hours_ago', { count: Math.abs(diffHour) });
-  } else if (diffMin > 0) {
-    return i18next.t('time.in_minutes', { count: diffMin });
-  } else if (diffMin < 0) {
-    return i18next.t('time.minutes_ago', { count: Math.abs(diffMin) });
-  } else {
-    return i18next.t('time.just_now');
-  }
-}
-
 // Expose formatting helpers globally
 window.i18nHelpers = {
   formatDate: formatDate,
-  formatCurrency: formatCurrencyI18n
+  formatCurrency: formatCurrency
 };

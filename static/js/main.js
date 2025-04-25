@@ -45,37 +45,8 @@ function formatCurrencyValue(e) {
   }
 }
 
-// Change language function
-function changeLanguage(lang) {
-  i18next.changeLanguage(lang).then(() => {
-    document.getElementById('current-language').textContent = {
-      'en': 'English',
-      'pl': 'Polski',
-      'cs': 'Čeština'
-    }[lang];
-    
-    // Update URL parameter without page reload
-    const url = new URL(window.location);
-    url.searchParams.set('lang', lang);
-    window.history.pushState({}, '', url);
-    
-    // Trigger custom event for components to update
-    document.dispatchEvent(new CustomEvent('languageChanged', { detail: { language: lang } }));
-    
-    // Save preference to user settings if logged in
-    const saveLanguageUrl = document.querySelector('meta[name="save-language-url"]')?.content;
-    if (saveLanguageUrl) {
-      fetch(saveLanguageUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRFToken': document.querySelector('meta[name="csrf-token"]')?.content
-        },
-        body: JSON.stringify({ language: lang })
-      });
-    }
-  });
-}
+// This function is now defined in i18n.js
+// changeLanguage(lang) { ... }
 
 // Currency conversion helper
 function convertCurrency(amount, fromCurrency, toCurrency) {
