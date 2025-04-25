@@ -268,7 +268,7 @@
                     },
                     title: {
                         display: true,
-                        text: i18next.t('reports.monthly_spending_by_cycle')
+                        text: 'Monthly Spending by Billing Cycle'
                     }
                 }
             }
@@ -276,16 +276,17 @@
 
         // Update chart when language changes
         document.addEventListener('languageChanged', function() {
+            // Fixed labels for now - these would come from translations
             spendingChart.data.labels = [
-                i18next.t('billing.weekly'),
-                i18next.t('billing.monthly'),
-                i18next.t('billing.quarterly'),
-                i18next.t('billing.bi-annually'),
-                i18next.t('billing.yearly')
+                'Weekly',
+                'Monthly',
+                'Quarterly', 
+                'Bi-annually',
+                'Yearly'
             ];
-            spendingChart.data.datasets[0].label = i18next.t('reports.monthly_spending_in', {'currency': '{{ current_user.preferred_currency }}'});
-            spendingChart.options.plugins.title.text = i18next.t('reports.monthly_spending_by_cycle');
-            spendingChart.options.scales.y.title.text = i18next.t('reports.amount_in', {'currency': '{{ current_user.preferred_currency }}'});
+            spendingChart.data.datasets[0].label = 'Monthly Spending in {{ current_user.preferred_currency }}';
+            spendingChart.options.plugins.title.text = 'Monthly Spending by Billing Cycle';
+            spendingChart.options.scales.y.title.text = 'Amount in {{ current_user.preferred_currency }}';
             spendingChart.update();
         });
     });
