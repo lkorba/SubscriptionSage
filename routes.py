@@ -14,8 +14,8 @@ import pandas as pd
 # Default subscriptions to populate
 DEFAULT_SUBSCRIPTIONS = [
     {"name": "Apple TV", "url": "https://www.apple.com/apple-tv-plus/"},
-    {"name": "Bolt", "url": "https://bolt.eu/"},
-    {"name": "Cursor", "url": "https://cursor.com/"},
+    {"name": "Bolt", "url": "https://bolt.new/"},
+    {"name": "Cursor", "url": "https://cursor.sh/"},
     {"name": "GitHub", "url": "https://github.com/"},
     {"name": "GitLab", "url": "https://gitlab.com/"},
     {"name": "Granola", "url": "https://granola.app/"},

@@ -255,7 +255,7 @@ def get_logo_url_for_service(service_name, url=None):
         'hulu': 'https://upload.wikimedia.org/wikipedia/commons/e/e4/Hulu_Logo.svg',
         'disney+': 'https://upload.wikimedia.org/wikipedia/commons/3/3e/Disney%2B_logo.svg',
         'twitch': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/twitch/twitch-original.svg',
-        'bolt': 'https://bolt.eu/favicon.ico',
+        'bolt': 'https://www.google.com/s2/favicons?domain=bolt.new&sz=64',
         'cursor': 'https://www.google.com/s2/favicons?domain=cursor.sh&sz=64',
         'gitlab': 'https://gitlab.com/favicon.ico',
         'granola': 'https://granola.app/favicon.ico',
