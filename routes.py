@@ -260,6 +260,9 @@ def add_subscription():
         # Create default reminders for this subscription
         create_subscription_reminders(subscription)
         
+        # Commit all changes
+        db.session.commit()
+        
         flash('Subscription added successfully', 'success')
         return redirect(url_for('dashboard'))
     
@@ -491,6 +494,9 @@ def import_csv():
         csv_content = file.read().decode('utf-8')
         df = pd.read_csv(io.StringIO(csv_content))
         
+        # Disable autocommit to ensure transaction integrity
+        db.session.begin_nested()
+        
         # Process each row
         for _, row in df.iterrows():
             name = row['Name']
@@ -531,7 +537,8 @@ def import_csv():
             else:
                 # Create new subscription
                 from utils import get_logo_url_for_service
-                logo_url = get_logo_url_for_service(name, url)
+                if not logo_url:
+                    logo_url = get_logo_url_for_service(name, url)
                 
                 subscription = Subscription(
                     user_id=current_user.id,
@@ -549,13 +556,31 @@ def import_csv():
                 subscription.calculate_next_payment_date()
                 db.session.add(subscription)
                 
-                # Create default reminders
-                create_subscription_reminders(subscription)
+                # Need to flush to get the ID before creating reminders
+                db.session.flush()
+                
+                # Create default reminders for new subscription only if it's not a lifetime subscription
+                if subscription.billing_cycle != 'lifetime':
+                    # Default reminder days
+                    default_days = [1, 7, 14]
+                    
+                    for days in default_days:
+                        reminder = Reminder(
+                            user_id=current_user.id,
+                            subscription_id=subscription.id,
+                            days_before=days,
+                            email_notification=True,
+                            push_notification=False
+                        )
+                        db.session.add(reminder)
         
+        # Commit all changes if successful
         db.session.commit()
         flash('CSV imported successfully', 'success')
     except Exception as e:
+        db.session.rollback()
         flash(f'Error importing CSV: {str(e)}', 'danger')
+        logging.error(f"CSV import error: {str(e)}")
     
     return redirect(url_for('dashboard'))
 
@@ -617,7 +642,9 @@ def get_exchange_rates():
 # Helper functions
 def create_default_reminders(user):
     """Create default user reminders preferences."""
-    pass  # This would be used for user-level default reminder settings
+    # We no longer create default reminders at the user level
+    # Default reminders are now created per subscription only
+    pass
 
 def create_subscription_reminders(subscription):
     """Create default reminders for a subscription (1, 7, and 14 days before)."""
@@ -637,7 +664,8 @@ def create_subscription_reminders(subscription):
         )
         db.session.add(reminder)
     
-    db.session.commit()
+    # Note: We don't commit here anymore - let the calling function decide when to commit
+    # This solves transaction issues during CSV import and other bulk operations
 
 # Error handlers
 @app.errorhandler(404)
