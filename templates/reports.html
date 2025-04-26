@@ -61,7 +61,14 @@
                                 {{ payment.next_payment_date.strftime('%Y-%m-%d') }}
                             </span>
                         </div>
-                        <p class="mb-1">{{ '%0.2f'|format(payment.amount) }} {{ payment.currency }}</p>
+                        <p class="mb-1">
+                            {{ '%0.2f'|format(payment.amount) }} {{ payment.currency }}
+                            {% if payment.currency != current_user.preferred_currency %}
+                            <span class="text-muted small">
+                                (≈ {{ '%0.2f'|format(payment.amount_in_preferred) }} {{ current_user.preferred_currency }})
+                            </span>
+                            {% endif %}
+                        </p>
                     </div>
                     {% endfor %}
                 </div>
@@ -143,37 +150,25 @@
                                 </span>
                             </div>
                         </td>
-                        <td>{{ '%0.2f'|format(subscription.amount) }} {{ subscription.currency }}</td>
-                        <td data-i18n="billing.{{ subscription.billing_cycle }}">{{ subscription.billing_cycle.capitalize() }}</td>
                         <td>
-                            {% if subscription.billing_cycle == 'weekly' %}
-                                {{ '%0.2f'|format(subscription.amount * 4.33) }} {{ subscription.currency }}
-                            {% elif subscription.billing_cycle == 'monthly' %}
-                                {{ '%0.2f'|format(subscription.amount) }} {{ subscription.currency }}
-                            {% elif subscription.billing_cycle == 'quarterly' %}
-                                {{ '%0.2f'|format(subscription.amount / 3) }} {{ subscription.currency }}
-                            {% elif subscription.billing_cycle == 'bi-annually' %}
-                                {{ '%0.2f'|format(subscription.amount / 6) }} {{ subscription.currency }}
-                            {% elif subscription.billing_cycle == 'yearly' %}
-                                {{ '%0.2f'|format(subscription.amount / 12) }} {{ subscription.currency }}
-                            {% else %}
-                                -
+                            <!-- Original amount -->
+                            <div>{{ '%0.2f'|format(subscription.amount) }} {{ subscription.currency }}</div>
+                            
+                            <!-- Converted amount in preferred currency (if different) -->
+                            {% if subscription.currency != current_user.preferred_currency %}
+                            <div class="text-muted small">
+                                ≈ {{ '%0.2f'|format(subscription.amount_in_preferred) }} {{ current_user.preferred_currency }}
+                            </div>
                             {% endif %}
                         </td>
+                        <td data-i18n="billing.{{ subscription.billing_cycle }}">{{ subscription.billing_cycle.capitalize() }}</td>
                         <td>
-                            {% if subscription.billing_cycle == 'weekly' %}
-                                {{ '%0.2f'|format(subscription.amount * 52) }} {{ subscription.currency }}
-                            {% elif subscription.billing_cycle == 'monthly' %}
-                                {{ '%0.2f'|format(subscription.amount * 12) }} {{ subscription.currency }}
-                            {% elif subscription.billing_cycle == 'quarterly' %}
-                                {{ '%0.2f'|format(subscription.amount * 4) }} {{ subscription.currency }}
-                            {% elif subscription.billing_cycle == 'bi-annually' %}
-                                {{ '%0.2f'|format(subscription.amount * 2) }} {{ subscription.currency }}
-                            {% elif subscription.billing_cycle == 'yearly' %}
-                                {{ '%0.2f'|format(subscription.amount) }} {{ subscription.currency }}
-                            {% else %}
-                                -
-                            {% endif %}
+                            <!-- Monthly cost in preferred currency -->
+                            {{ '%0.2f'|format(subscription.monthly_cost) }} {{ current_user.preferred_currency }}
+                        </td>
+                        <td>
+                            <!-- Yearly cost in preferred currency -->
+                            {{ '%0.2f'|format(subscription.yearly_cost) }} {{ current_user.preferred_currency }}
                         </td>
                         <td>
                             {% if subscription.billing_cycle == 'lifetime' %}

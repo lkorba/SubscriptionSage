@@ -386,24 +386,47 @@ def reports():
     billing_cycles = ['weekly', 'monthly', 'quarterly', 'bi-annually', 'yearly']
     spending_by_cycle = {cycle: 0 for cycle in billing_cycles}
     
+    # Add converted amounts to each subscription for display in the template
     for sub in subscriptions:
+        # Add the amount in user's preferred currency as a property
+        sub.amount_in_preferred = convert_currency(
+            sub.amount,
+            sub.currency,
+            current_user.preferred_currency
+        )
+        
+        # Calculate monthly and yearly costs in preferred currency
+        if sub.billing_cycle == 'weekly':
+            sub.monthly_cost = sub.amount_in_preferred * 4.33  # Average weeks in a month
+            sub.yearly_cost = sub.amount_in_preferred * 52
+        elif sub.billing_cycle == 'monthly':
+            sub.monthly_cost = sub.amount_in_preferred
+            sub.yearly_cost = sub.amount_in_preferred * 12
+        elif sub.billing_cycle == 'quarterly':
+            sub.monthly_cost = sub.amount_in_preferred / 3
+            sub.yearly_cost = sub.amount_in_preferred * 4
+        elif sub.billing_cycle == 'bi-annually':
+            sub.monthly_cost = sub.amount_in_preferred / 6
+            sub.yearly_cost = sub.amount_in_preferred * 2
+        elif sub.billing_cycle == 'yearly':
+            sub.monthly_cost = sub.amount_in_preferred / 12
+            sub.yearly_cost = sub.amount_in_preferred
+        else:  # lifetime
+            sub.monthly_cost = 0
+            sub.yearly_cost = 0
+        
+        # Update spending by cycle for the chart
         if sub.is_active and sub.billing_cycle != 'lifetime':
-            amount_in_preferred = convert_currency(
-                sub.amount,
-                sub.currency,
-                current_user.preferred_currency
-            )
-            
             if sub.billing_cycle == 'weekly':
-                spending_by_cycle['weekly'] += amount_in_preferred * 4.33  # Average weeks in a month
+                spending_by_cycle['weekly'] += sub.monthly_cost
             elif sub.billing_cycle == 'monthly':
-                spending_by_cycle['monthly'] += amount_in_preferred
+                spending_by_cycle['monthly'] += sub.monthly_cost
             elif sub.billing_cycle == 'quarterly':
-                spending_by_cycle['quarterly'] += amount_in_preferred / 3
+                spending_by_cycle['quarterly'] += sub.monthly_cost
             elif sub.billing_cycle == 'bi-annually':
-                spending_by_cycle['bi-annually'] += amount_in_preferred / 6
+                spending_by_cycle['bi-annually'] += sub.monthly_cost
             elif sub.billing_cycle == 'yearly':
-                spending_by_cycle['yearly'] += amount_in_preferred / 12
+                spending_by_cycle['yearly'] += sub.monthly_cost
     
     # Get upcoming payments in the next 30 days
     now = datetime.utcnow()
@@ -415,6 +438,14 @@ def reports():
         Subscription.next_payment_date.between(now, next_month),
         Subscription.is_active == True
     ).order_by(Subscription.next_payment_date).all()
+    
+    # Also add converted amounts to upcoming payments
+    for payment in upcoming_payments:
+        payment.amount_in_preferred = convert_currency(
+            payment.amount,
+            payment.currency,
+            current_user.preferred_currency
+        )
     
     # Calculate totals
     total_monthly = sum(spending_by_cycle.values())
