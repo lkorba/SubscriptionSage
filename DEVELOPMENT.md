@@ -1,11 +1,11 @@
 # SubscriptionSage Development Guide
 
-This guide will help you set up your development environment for working on SubscriptionSage.
+This guide will help you set up your development environment for working on SubscriptionSage using Dev Containers.
 
 ## Prerequisites
 
-- Python 3.11 or higher
-- PostgreSQL database
+- [Docker](https://www.docker.com/products/docker-desktop)
+- [VS Code](https://code.visualstudio.com/) with the [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
 - Git
 
 ## Setup Instructions
@@ -17,32 +17,38 @@ git clone [repository-url]
 cd SubscriptionSage
 ```
 
-### 2. Set Up Virtual Environment
+### 2. Open in VS Code with Dev Containers
 
-```bash
-# Create a virtual environment
-python -m venv venv
+1. Open the project in VS Code:
+   ```bash
+   code .
+   ```
 
-# Activate the virtual environment
-# On Windows:
-venv\Scripts\activate
-# On macOS/Linux:
-source venv/bin/activate
+2. When prompted, click "Reopen in Container" or use the command palette (F1) and select "Dev Containers: Reopen in Container"
+
+   This will:
+   - Build the development container
+   - Install all dependencies
+   - Set up the PostgreSQL database
+   - Configure the development environment
+
+### 3. Environment Variables
+
+The development container uses two types of environment variables:
+
+1. Development settings (in `docker-compose.yml`):
+```
+FLASK_APP=app.py
+FLASK_ENV=development
+DATABASE_URL=postgresql://postgres:postgres@db:5432/subscriptionsage
+SESSION_SECRET=your-secret-key-here
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+POSTGRES_DB=subscriptionsage
 ```
 
-### 3. Install Dependencies
-
-```bash
-pip install -r requirements.txt
+2. User-specific settings (in `.env`):
 ```
-
-### 4. Environment Variables
-
-Create a `.env` file in the root directory with the following variables:
-
-```
-DATABASE_URL=postgresql://username:password@localhost:5432/subscription_sage
-SESSION_SECRET=your_secret_key
 MAIL_SERVER=smtp.gmail.com
 MAIL_PORT=587
 MAIL_USERNAME=your_email@gmail.com
@@ -50,23 +56,22 @@ MAIL_PASSWORD=your_app_password
 MAIL_DEFAULT_SENDER=noreply@subscriptiontracker.com
 ```
 
-Replace the placeholder values with your actual configuration.
+Important security notes:
+- The `.env` file is automatically ignored by git (it's in `.gitignore`)
+- Never commit sensitive credentials to version control
+- Keep your `.env` file secure and don't share it
+- For team development, use a secure method to share environment variables (like a password manager or secure vault)
 
-### 5. Set Up Database
+### 4. Start the Development Server
 
-Create a PostgreSQL database with the name specified in your DATABASE_URL.
+The development server will start automatically when the container is built. You can access the application at http://localhost:5000.
 
-### 6. Run Migrations
-
-The application will automatically create tables when it starts.
-
-### 7. Start the Development Server
+If you need to restart the server:
 
 ```bash
-python main.py
+docker compose down
+docker compose up -d
 ```
-
-The application will be available at http://localhost:5000.
 
 ## Development Workflow
 
@@ -74,16 +79,6 @@ The application will be available at http://localhost:5000.
 2. Make your changes
 3. Run the tests (if available)
 4. Submit a pull request
-
-## Environmental Variables
-
-- `DATABASE_URL`: Connection string for PostgreSQL database
-- `SESSION_SECRET`: Secret key for session management
-- `MAIL_SERVER`: SMTP server for sending emails
-- `MAIL_PORT`: SMTP port
-- `MAIL_USERNAME`: Email account username
-- `MAIL_PASSWORD`: Email account password
-- `MAIL_DEFAULT_SENDER`: Default email sender address
 
 ## Project Structure
 
@@ -94,9 +89,26 @@ The application will be available at http://localhost:5000.
 - `utils.py`: Utility functions
 - `templates/`: HTML templates
 - `static/`: Static files (CSS, JS, images)
+- `.devcontainer/`: Dev container configuration
+- `docker-compose.yml`: Docker services configuration
+- `.env`: User-specific environment variables (not committed to git)
+
+## Dev Container Features
+
+The development container includes:
+
+- Python 3.11
+- PostgreSQL 16
+- All required Python packages
+- Pre-configured development environment
+- Hot-reloading for development
+- Integrated database management
 
 ## Notes
 
 - The application uses Flask for web framework
 - SQLAlchemy is used for database ORM
 - Background tasks are handled by APScheduler
+- All development is done inside a containerized environment
+- No need to install Python or PostgreSQL locally
+- Consistent development environment across all team members
