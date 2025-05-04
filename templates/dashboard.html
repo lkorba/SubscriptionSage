@@ -19,7 +19,8 @@
         <div class="card text-center">
             <div class="card-body">
                 <h5 class="card-title" data-i18n="dashboard.monthly_spending">Monthly Spending</h5>
-                <p class="card-text display-4">{{ '%0.2f'|format(monthly_spending) }} {{ current_user.preferred_currency }}</p>
+                <p class="card-text display-4">{{ '%0.2f'|format(monthly_spending) }} {{ current_user.preferred_currency
+                    }}</p>
             </div>
         </div>
     </div>
@@ -64,7 +65,8 @@
                     <div class="list-group-item list-group-item-action">
                         <div class="d-flex w-100 justify-content-between">
                             <h5 class="mb-1">{{ payment.name }}</h5>
-                            <span class="badge {% if payment.next_payment_date.date() <= current_datetime.date() %}bg-danger{% else %}bg-primary{% endif %}">
+                            <span
+                                class="badge {% if payment.next_payment_date.date() <= current_datetime.date() %}bg-danger{% else %}bg-primary{% endif %}">
                                 {{ payment.next_payment_date.strftime('%Y-%m-%d') }}
                             </span>
                         </div>
@@ -116,7 +118,8 @@
                         <td>
                             <div class="d-flex align-items-center">
                                 {% if subscription.logo_url %}
-                                <img src="{{ subscription.logo_url }}" alt="{{ subscription.name }} logo" class="me-2" width="24" height="24">
+                                <img src="{{ subscription.logo_url }}" alt="{{ subscription.name }} logo" class="me-2"
+                                    width="24" height="24">
                                 {% endif %}
                                 <span>
                                     {% if subscription.url %}
@@ -128,13 +131,22 @@
                             </div>
                         </td>
                         <td>{{ '%0.2f'|format(subscription.amount) }} {{ subscription.currency }}</td>
-                        <td data-i18n="billing.{{ subscription.billing_cycle }}">{{ subscription.billing_cycle.capitalize() }}</td>
+                        <td data-i18n="billing.{{ subscription.billing_cycle }}">{{
+                            subscription.billing_cycle.capitalize() }}</td>
                         <td>
-                            {% if subscription.billing_cycle == 'lifetime' %}
-                            <span class="badge bg-secondary" data-i18n="subscription.one_time">One Time</span>
-                            {% else %}
-                            {{ subscription.next_payment_date.strftime('%Y-%m-%d') if subscription.next_payment_date else '-' }}
-                            {% endif %}
+                            {% if subscription.next_payment_date and subscription.next_payment_date <= current_datetime
+                                %} <span class="badge bg-danger" data-i18n="subscription.payment_due">Payment Due</span>
+                                <button type="button" class="btn btn-success btn-sm ms-2 mark-paid-btn"
+                                    data-subscription-id="{{ subscription.id }}" data-bs-toggle="modal"
+                                    data-bs-target="#markPaidModal" data-subscription-name="{{ subscription.name }}">
+                                    <i class="fas fa-check"></i> <span data-i18n="subscription.mark_paid">Mark as
+                                        Paid</span>
+                                </button>
+                                {% elif subscription.next_payment_date %}
+                                <span class="badge bg-info">
+                                    {{ subscription.next_payment_date.strftime('%Y-%m-%d') }}
+                                </span>
+                                {% endif %}
                         </td>
                         <td>
                             {% if subscription.is_active %}
@@ -145,10 +157,12 @@
                         </td>
                         <td>
                             <div class="btn-group">
-                                <a href="{{ url_for('edit_subscription', id=subscription.id) }}" class="btn btn-sm btn-outline-primary">
+                                <a href="{{ url_for('edit_subscription', id=subscription.id) }}"
+                                    class="btn btn-sm btn-outline-primary">
                                     <i class="fas fa-edit"></i>
                                 </a>
-                                <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal-{{ subscription.id }}">
+                                <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal"
+                                    data-bs-target="#deleteModal-{{ subscription.id }}">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </div>
@@ -163,7 +177,8 @@
             <h4 data-i18n="dashboard.no_subscriptions">No subscriptions found</h4>
             <p data-i18n="dashboard.add_new_message">Start tracking your subscriptions by adding your first one.</p>
             <a href="{{ url_for('add_subscription') }}" class="btn btn-primary">
-                <i class="fas fa-plus me-2"></i> <span data-i18n="dashboard.add_first">Add Your First Subscription</span>
+                <i class="fas fa-plus me-2"></i> <span data-i18n="dashboard.add_first">Add Your First
+                    Subscription</span>
             </a>
         </div>
         {% endif %}
@@ -172,20 +187,25 @@
 
 <!-- Delete Confirmation Modals -->
 {% for subscription in subscriptions %}
-<div class="modal fade" id="deleteModal-{{ subscription.id }}" tabindex="-1" aria-labelledby="deleteModalLabel-{{ subscription.id }}" aria-hidden="true">
+<div class="modal fade" id="deleteModal-{{ subscription.id }}" tabindex="-1"
+    aria-labelledby="deleteModalLabel-{{ subscription.id }}" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="deleteModalLabel-{{ subscription.id }}" data-i18n="dashboard.confirm_delete">Confirm Delete</h5>
+                <h5 class="modal-title" id="deleteModalLabel-{{ subscription.id }}"
+                    data-i18n="dashboard.confirm_delete">Confirm Delete</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p data-i18n="[html]dashboard.delete_confirmation" data-i18n-options='{"name": "{{ subscription.name }}"}'>
-                    Are you sure you want to delete the subscription <strong>{{ subscription.name }}</strong>? This action cannot be undone.
+                <p data-i18n="[html]dashboard.delete_confirmation"
+                    data-i18n-options='{"name": "{{ subscription.name }}"}'>
+                    Are you sure you want to delete the subscription <strong>{{ subscription.name }}</strong>? This
+                    action cannot be undone.
                 </p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-i18n="general.cancel">Cancel</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                    data-i18n="general.cancel">Cancel</button>
                 <form action="{{ url_for('delete_subscription', id=subscription.id) }}" method="POST">
                     <button type="submit" class="btn btn-danger" data-i18n="general.delete">Delete</button>
                 </form>
@@ -200,19 +220,45 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="importModalLabel" data-i18n="dashboard.import_subscriptions">Import Subscriptions</h5>
+                <h5 class="modal-title" id="importModalLabel" data-i18n="dashboard.import_subscriptions">Import
+                    Subscriptions</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form action="{{ url_for('import_csv') }}" method="POST" enctype="multipart/form-data">
                     <div class="mb-3">
-                        <label for="csv_file" class="form-label" data-i18n="dashboard.select_csv">Select CSV File</label>
+                        <label for="csv_file" class="form-label" data-i18n="dashboard.select_csv">Select CSV
+                            File</label>
                         <input class="form-control" type="file" id="csv_file" name="csv_file" accept=".csv" required>
                     </div>
                     <div class="d-grid">
-                        <button type="submit" class="btn btn-primary" data-i18n="dashboard.upload_import">Upload & Import</button>
+                        <button type="submit" class="btn btn-primary" data-i18n="dashboard.upload_import">Upload &
+                            Import</button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Mark as Paid Modal -->
+<div class="modal fade" id="markPaidModal" tabindex="-1" aria-labelledby="markPaidModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="markPaidModalLabel" data-i18n="subscription.mark_paid">Mark as Paid</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p data-i18n="subscription.mark_paid_confirmation">Are you sure you want to mark this payment as paid?
+                </p>
+                <p class="subscription-name"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                    data-i18n="general.cancel">Cancel</button>
+                <button type="button" class="btn btn-success" id="confirmMarkPaid"
+                    data-i18n="subscription.confirm_paid">Confirm Payment</button>
             </div>
         </div>
     </div>
@@ -220,8 +266,9 @@
 {% endblock %}
 
 {% block scripts %}
+{{ super() }}
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         // Chart initialization
         const ctx = document.getElementById('subscriptionChart').getContext('2d');
         const subscriptionChart = new Chart(ctx, {
@@ -238,51 +285,106 @@
                 datasets: [{
                     data: [
                         {{ cycle_counts.weekly }},
-                        {{ cycle_counts.monthly }},
+                {{ cycle_counts.monthly }},
                         {{ cycle_counts.quarterly }},
-                        {{ cycle_counts['bi-annually'] }},
-                        {{ cycle_counts.yearly }},
-                        {{ cycle_counts.lifetime }}
+        {{ cycle_counts['bi-annually'] }},
+        {{ cycle_counts.yearly }},
+        {{ cycle_counts.lifetime }}
                     ],
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.8)',
-                        'rgba(54, 162, 235, 0.8)',
-                        'rgba(255, 206, 86, 0.8)',
-                        'rgba(75, 192, 192, 0.8)',
-                        'rgba(153, 102, 255, 0.8)',
-                        'rgba(255, 159, 64, 0.8)'
-                    ],
-                    borderWidth: 1
+        backgroundColor: [
+        'rgba(255, 99, 132, 0.8)',
+        'rgba(54, 162, 235, 0.8)',
+        'rgba(255, 206, 86, 0.8)',
+        'rgba(75, 192, 192, 0.8)',
+        'rgba(153, 102, 255, 0.8)',
+        'rgba(255, 159, 64, 0.8)'
+    ],
+        borderWidth: 1
                 }]
             },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                    },
-                    title: {
-                        display: true,
-                        text: 'Billing Cycles'
-                    }
-                }
+        options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'bottom',
+            },
+            title: {
+                display: true,
+                text: 'Billing Cycles'
             }
+        }
+    }
         });
 
-        // Update chart when language changes
-        document.addEventListener('languageChanged', function() {
-            // Use our translated labels (fixed values for now)
-            subscriptionChart.data.labels = [
-                'Weekly',
-                'Monthly',
-                'Quarterly',
-                'Bi-annually',
-                'Yearly',
-                'Lifetime'
-            ];
-            subscriptionChart.options.plugins.title.text = 'Billing Cycles';
-            subscriptionChart.update();
+    // Update chart when language changes
+    document.addEventListener('languageChanged', function () {
+        // Use our translated labels (fixed values for now)
+        subscriptionChart.data.labels = [
+            'Weekly',
+            'Monthly',
+            'Quarterly',
+            'Bi-annually',
+            'Yearly',
+            'Lifetime'
+        ];
+        subscriptionChart.options.plugins.title.text = 'Billing Cycles';
+        subscriptionChart.update();
+    });
+
+    // Mark as Paid functionality
+    const markPaidModal = document.getElementById('markPaidModal');
+    const confirmMarkPaidBtn = document.getElementById('confirmMarkPaid');
+    let currentSubscriptionId = null;
+
+    // Handle mark as paid button clicks
+    document.querySelectorAll('.mark-paid-btn').forEach(button => {
+        button.addEventListener('click', function () {
+            currentSubscriptionId = this.dataset.subscriptionId;
+            const subscriptionName = this.dataset.subscriptionName;
+            markPaidModal.querySelector('.subscription-name').textContent = subscriptionName;
         });
+    });
+
+    // Handle confirm mark as paid
+    confirmMarkPaidBtn.addEventListener('click', function () {
+        if (!currentSubscriptionId) return;
+
+        fetch(`/api/mark_paid/${currentSubscriptionId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Close the modal
+                    const modal = bootstrap.Modal.getInstance(markPaidModal);
+                    modal.hide();
+
+                    // Update the UI
+                    const row = document.querySelector(`[data-subscription-id="${currentSubscriptionId}"]`).closest('tr');
+                    const nextPaymentCell = row.querySelector('td:nth-child(4)');
+
+                    if (data.next_payment_date) {
+                        nextPaymentCell.innerHTML = `
+                        <span class="badge bg-info">
+                            ${data.next_payment_date}
+                        </span>
+                    `;
+                    } else {
+                        nextPaymentCell.innerHTML = '';
+                    }
+
+                    // Reset the current subscription ID
+                    currentSubscriptionId = null;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to mark payment as paid. Please try again.');
+            });
+    });
     });
 </script>
 {% endblock %}

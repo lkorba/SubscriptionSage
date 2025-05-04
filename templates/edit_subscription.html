@@ -119,71 +119,67 @@
                             data-i18n="subscription.is_active">Active</label>
                     </div>
 
+                    <!-- Reminders Toggle -->
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="enable_reminders" name="enable_reminders" {%
+                            if reminders %}checked{% endif %}>
+                        <label class="form-check-label" for="enable_reminders"
+                            data-i18n="subscription.enable_reminders">Enable Payment Reminders</label>
+                    </div>
+
                     <!-- Reminders Section -->
-                    <div class="card mb-3">
+                    <div class="card mb-3" id="reminders-section" {% if not reminders %}style="display: none;" {% endif
+                        %}>
                         <div class="card-header">
                             <h5 class="mb-0" data-i18n="edit_subscription.reminders">Payment Reminders</h5>
                         </div>
                         <div class="card-body">
+                            <p class="text-muted mb-3" data-i18n="edit_subscription.reminders_info">Configure up to 3
+                                reminders before payment date:</p>
                             <div id="reminders-container">
-                                <p data-i18n="edit_subscription.reminders_info">Configure up to 3 reminders before
-                                    payment date:</p>
-
-                                <!-- Show existing reminders, or default values -->
-                                {% set reminder_count = reminders|length if reminders else 3 %}
-                                <input type="hidden" name="reminder_count" id="reminder_count"
-                                    value="{{ reminder_count }}">
-
-                                {% for i in range(1, 4) %}
-                                {% set reminder = reminders[i-1] if reminders and i <= reminders|length else None %}
-                                    <div class="card mb-2 reminder-card" id="reminder-{{ i }}" {% if i> reminder_count
-                                    %}style="display: none;"{% endif %}>
-                                    <div class="card-body">
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <label for="days_before_{{ i }}" class="form-label"
-                                                    data-i18n="reminder.days_before">Days Before Payment</label>
-                                                <input type="number" class="form-control" id="days_before_{{ i }}"
-                                                    name="days_before_{{ i }}"
-                                                    value="{{ reminder.days_before if reminder else [1, 7, 14][i-1] }}"
-                                                    min="1" max="30">
+                                {% for reminder in reminders %}
+                                <div class="reminder-item mb-3">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <label class="form-label" data-i18n="reminder.days_before">Days Before
+                                                Payment</label>
+                                            <input type="number" class="form-control"
+                                                name="days_before_{{ loop.index }}" value="{{ reminder.days_before }}"
+                                                min="1" max="30">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label"
+                                                data-i18n="reminder.notification_type">Notification Type</label>
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input"
+                                                    name="email_notification_{{ loop.index }}" {% if
+                                                    reminder.email_notification %}checked{% endif %}>
+                                                <label class="form-check-label" data-i18n="reminder.email">Email</label>
                                             </div>
-                                            <div class="col-md-6">
-                                                <label class="form-label"
-                                                    data-i18n="reminder.notification_type">Notification Type</label>
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox"
-                                                        id="email_notification_{{ i }}"
-                                                        name="email_notification_{{ i }}" {% if reminder is none or
-                                                        reminder.email_notification %}checked{% endif %}>
-                                                    <label class="form-check-label" for="email_notification_{{ i }}"
-                                                        data-i18n="reminder.email">Email</label>
-                                                </div>
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox"
-                                                        id="push_notification_{{ i }}" name="push_notification_{{ i }}"
-                                                        {% if reminder and reminder.push_notification %}checked{% endif
-                                                        %}>
-                                                    <label class="form-check-label" for="push_notification_{{ i }}"
-                                                        data-i18n="reminder.push">Push Notification</label>
-                                                </div>
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input"
+                                                    name="push_notification_{{ loop.index }}" {% if
+                                                    reminder.push_notification %}checked{% endif %}>
+                                                <label class="form-check-label" data-i18n="reminder.push">Push
+                                                    Notification</label>
                                             </div>
                                         </div>
+                                        <div class="col-md-2">
+                                            <label class="form-label">&nbsp;</label>
+                                            <button type="button" class="btn btn-danger d-block w-100 remove-reminder"
+                                                data-i18n="reminder.remove">Remove</button>
+                                        </div>
                                     </div>
+                                </div>
+                                {% endfor %}
                             </div>
-                            {% endfor %}
-
-                            <div class="d-flex justify-content-between">
-                                <button type="button" class="btn btn-sm btn-outline-danger" id="remove-reminder" {% if
-                                    reminder_count <=1 %}disabled{% endif %}>
-                                    <i class="fas fa-minus me-1"></i> <span data-i18n="reminder.remove">Remove
-                                        Reminder</span>
-                                </button>
-                                <button type="button" class="btn btn-sm btn-outline-success" id="add-reminder" {% if
-                                    reminder_count>= 3 %}disabled{% endif %}>
-                                    <i class="fas fa-plus me-1"></i> <span data-i18n="reminder.add">Add Reminder</span>
-                                </button>
-                            </div>
+                            <input type="hidden" name="reminder_count" id="reminder-count"
+                                value="{{ reminders|length }}">
+                            <button type="button" class="btn btn-secondary" id="add-reminder" {% if reminders|length>= 3
+                                %}disabled{% endif %} data-i18n="reminder.add">Add Reminder</button>
+                            {% if reminders|length >= 3 %}
+                            <p class="text-muted mt-2">Maximum number of reminders (3) reached.</p>
+                            {% endif %}
                         </div>
                     </div>
             </div>
@@ -301,6 +297,14 @@
     const urlInput = document.getElementById('url');
     const fetchFaviconBtn = document.getElementById('fetchFaviconBtn');
 
+    // Reminders toggle functionality
+    const enableRemindersCheckbox = document.getElementById('enable_reminders');
+    const remindersSection = document.getElementById('reminders-section');
+
+    enableRemindersCheckbox.addEventListener('change', function () {
+        remindersSection.style.display = this.checked ? 'block' : 'none';
+    });
+
     function updateLogoPreview(src) {
         if (src) {
             logoPreview.src = src;
@@ -393,5 +397,65 @@
         };
         img.src = faviconUrl;
     });
+
+    // Reminders functionality
+    const remindersContainer = document.getElementById('reminders-container');
+    const addReminderBtn = document.getElementById('add-reminder');
+    const reminderCountInput = document.getElementById('reminder-count');
+    const maxReminders = 3;
+
+    function updateReminderCount() {
+        const count = remindersContainer.children.length;
+        reminderCountInput.value = count;
+        addReminderBtn.disabled = count >= maxReminders;
+    }
+
+    function createReminderElement(index) {
+        const reminderDiv = document.createElement('div');
+        reminderDiv.className = 'reminder-item mb-3';
+        reminderDiv.innerHTML = `
+            <div class="row">
+                <div class="col-md-4">
+                    <label class="form-label" data-i18n="reminder.days_before">Days Before Payment</label>
+                    <input type="number" class="form-control" name="days_before_${index}" value="7" min="1" max="30">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label" data-i18n="reminder.notification_type">Notification Type</label>
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" name="email_notification_${index}" checked>
+                        <label class="form-check-label" data-i18n="reminder.email">Email</label>
+                    </div>
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" name="push_notification_${index}">
+                        <label class="form-check-label" data-i18n="reminder.push">Push Notification</label>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">&nbsp;</label>
+                    <button type="button" class="btn btn-danger d-block w-100 remove-reminder" data-i18n="reminder.remove">Remove</button>
+                </div>
+            </div>
+        `;
+        return reminderDiv;
+    }
+
+    addReminderBtn.addEventListener('click', function () {
+        if (remindersContainer.children.length < maxReminders) {
+            const newIndex = remindersContainer.children.length + 1;
+            const reminderElement = createReminderElement(newIndex);
+            remindersContainer.appendChild(reminderElement);
+            updateReminderCount();
+        }
+    });
+
+    remindersContainer.addEventListener('click', function (e) {
+        if (e.target.classList.contains('remove-reminder')) {
+            e.target.closest('.reminder-item').remove();
+            updateReminderCount();
+        }
+    });
+
+    // Initial count update
+    updateReminderCount();
 </script>
 {% endblock %}

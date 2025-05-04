@@ -99,7 +99,12 @@
     "one_time": "One Time",
     "created_at": "Created:",
     "updated_at": "Last Updated:",
-    "delete": "Delete Subscription"
+    "delete": "Delete Subscription",
+    "enable_reminders": "Enable Payment Reminders",
+    "mark_paid": "Mark as Paid",
+    "mark_paid_confirmation": "Are you sure you want to mark this payment as paid?",
+    "confirm_paid": "Confirm Payment",
+    "payment_due": "Payment Due"
   },
   "reminder": {
     "days_before": "Days Before Payment",

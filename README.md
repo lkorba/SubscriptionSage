@@ -12,7 +12,8 @@ In today's digital economy, people often subscribe to numerous services across d
 
 - **Subscription Tracking**: Easily add, edit, and delete subscription services
 - **Dashboard Overview**: Get a quick glance at your active subscriptions, monthly spending, and upcoming payments
-- **Reminder System**: Set up email notifications for upcoming subscription renewals
+- **Reminder System**: Set up to 3 email notifications for upcoming subscription renewals
+- **Payment Management**: Mark payments as completed and automatically update next payment dates
 - **Multi-Currency Support**: Track subscriptions in different currencies with automatic conversion to your preferred currency
 - **Billing Cycle Management**: Support for weekly, monthly, quarterly, bi-annual, yearly, and lifetime subscriptions
 - **Data Analysis**: Visualize your subscription spending patterns

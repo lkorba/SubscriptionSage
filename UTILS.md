@@ -60,7 +60,7 @@ Formats an amount with the appropriate currency symbol.
 
 ## Reminder System
 
-The application can send email reminders for upcoming subscription payments.
+The application can send email reminders for upcoming subscription payments. Each subscription can have up to 3 reminders configured.
 
 ### Setup
 
@@ -78,6 +78,35 @@ The application can send email reminders for upcoming subscription payments.
 - `check_upcoming_reminders()`: Checks for upcoming payments and sends reminders
 - `send_reminder_email(user, subscription, days_until_payment)`: Sends an email reminder
 - `reset_reminders_for_next_period()`: Resets reminders for the next billing period
+
+### Reminder Limits
+
+- Maximum of 3 reminders per subscription
+- Each reminder can be configured for:
+  - Days before payment (1-30 days)
+  - Notification type (email and/or push)
+- Reminders are automatically disabled for lifetime subscriptions
+
+## Payment Management
+
+### `mark_subscription_paid(subscription_id)`
+
+Marks a subscription payment as completed and updates the next payment date.
+
+- **Parameters**:
+  - `subscription_id`: ID of the subscription
+- **Returns**: Updated next payment date
+- **Actions**:
+  - Updates the next payment date based on billing cycle
+  - Resets reminders for the next period
+  - Handles lifetime subscriptions appropriately
+
+### Usage
+
+```python
+# Mark a subscription as paid
+next_payment_date = mark_subscription_paid(subscription_id)
+```
 
 ## Service Management
 

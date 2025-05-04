@@ -178,41 +178,26 @@ def dashboard():
 @login_required
 def add_subscription():
     if request.method == 'POST':
-        name = request.form['name']
-        url = request.form['url']
-        amount = float(request.form['amount']) if request.form['amount'] else 0.0
-        currency = request.form['currency']
-        billing_cycle = request.form['billing_cycle']
-        start_date_str = request.form['start_date']
-        notes = request.form['notes']
-        
-        start_date = datetime.strptime(start_date_str, '%Y-%m-%d') if start_date_str else datetime.utcnow()
-        
-        # Handle logo
+        name = request.form.get('name')
+        url = request.form.get('url')
+        amount = float(request.form.get('amount', 0))
+        currency = request.form.get('currency', 'USD')
+        billing_cycle = request.form.get('billing_cycle')
+        start_date = datetime.strptime(request.form.get('start_date'), '%Y-%m-%d')
+        notes = request.form.get('notes')
+        enable_reminders = 'enable_reminders' in request.form
+
+        # Handle logo upload
         logo_url = None
-        if 'logo' in request.files and request.files['logo'].filename:
-            from utils import handle_image_upload
-            # Generate a temporary ID for the file name (will be replaced with actual ID after DB insert)
-            temp_id = f"temp_{int(datetime.now().timestamp())}"
-            logo_url = handle_image_upload(request.files['logo'], temp_id)
-            
-            if not logo_url:
-                flash('Logo upload failed. Please ensure it is a valid image under 50KB and 200x200px.', 'warning')
-        elif request.form.get('favicon_url'):
-            # Use the provided favicon URL
-            logo_url = request.form['favicon_url']
-        elif not request.form.get('remove_logo'):
-            # Use default logo based on service name, and try to get favicon from the URL if provided
-            from utils import get_logo_url_for_service
-            logo_url = get_logo_url_for_service(name, url)
-        
-        # Check if we used a temporary ID for the logo
         used_temp_id = False
-        if logo_url and 'temp_' in logo_url:
-            used_temp_id = True
-            temp_logo_url = logo_url
-            # Use a placeholder until we have the real ID
-            logo_url = None
+        temp_logo_url = None
+
+        if 'logo' in request.files:
+            logo_file = request.files['logo']
+            if logo_file and logo_file.filename:
+                logo_url = handle_image_upload(logo_file, current_user.id)
+                used_temp_id = True
+                temp_logo_url = logo_url
 
         subscription = Subscription(
             user_id=current_user.id,
@@ -257,8 +242,9 @@ def add_subscription():
                 except Exception as e:
                     logging.error(f"Error renaming temp logo file: {str(e)}")
         
-        # Create default reminders for this subscription
-        create_subscription_reminders(subscription)
+        # Create reminders only if enabled
+        if enable_reminders and subscription.billing_cycle != 'lifetime':
+            create_subscription_reminders(subscription)
         
         # Commit all changes
         db.session.commit()
@@ -285,66 +271,74 @@ def add_subscription():
 @login_required
 def edit_subscription(id):
     subscription = Subscription.query.filter_by(id=id, user_id=current_user.id).first_or_404()
+    reminders = Reminder.query.filter_by(subscription_id=id).all()
     
     if request.method == 'POST':
-        # Get the old name to check if it changed
-        old_name = subscription.name
-        
-        subscription.name = request.form['name']
-        subscription.url = request.form['url']
-        subscription.amount = float(request.form['amount']) if request.form['amount'] else 0.0
-        subscription.currency = request.form['currency']
-        subscription.billing_cycle = request.form['billing_cycle']
-        start_date_str = request.form['start_date']
-        subscription.notes = request.form['notes']
+        subscription.name = request.form.get('name')
+        subscription.url = request.form.get('url')
+        subscription.amount = float(request.form.get('amount', 0))
+        subscription.currency = request.form.get('currency', 'USD')
+        subscription.billing_cycle = request.form.get('billing_cycle')
+        subscription.start_date = datetime.strptime(request.form.get('start_date'), '%Y-%m-%d')
+        subscription.notes = request.form.get('notes')
         subscription.is_active = 'is_active' in request.form
-        
-        subscription.start_date = datetime.strptime(start_date_str, '%Y-%m-%d') if start_date_str else subscription.start_date
-        
-        # Handle logo
-        if 'logo' in request.files and request.files['logo'].filename:
-            from utils import handle_image_upload
-            logo_url = handle_image_upload(request.files['logo'], subscription.id)
-            
-            if logo_url:
-                # Delete old logo file if it exists and is in our uploads directory
-                if subscription.logo_url and subscription.logo_url.startswith('/static/uploads/'):
+        enable_reminders = 'enable_reminders' in request.form
+
+        # Handle logo upload
+        if 'logo' in request.files:
+            logo_file = request.files['logo']
+            if logo_file and logo_file.filename:
+                # Delete old logo if exists
+                if subscription.logo_url:
                     try:
                         os.remove(subscription.logo_url[1:])  # Remove leading slash
                     except Exception as e:
-                        logging.error(f"Error deleting old logo file: {str(e)}")
+                        logging.error(f"Error deleting old logo: {str(e)}")
                 
-                subscription.logo_url = logo_url
-            else:
-                flash('Logo upload failed. Please ensure it is a valid image under 50KB and 200x200px.', 'warning')
-        elif request.form.get('favicon_url'):
-            # Use the provided favicon URL
-            subscription.logo_url = request.form['favicon_url']
-        elif request.form.get('remove_logo'):
-            # Remove the logo
-            if subscription.logo_url and subscription.logo_url.startswith('/static/uploads/'):
-                try:
-                    os.remove(subscription.logo_url[1:])  # Remove leading slash
-                except Exception as e:
-                    logging.error(f"Error deleting logo file: {str(e)}")
-            subscription.logo_url = None
-        elif old_name != subscription.name:
-            # Update logo URL if name changed
-            from utils import get_logo_url_for_service
-            subscription.logo_url = get_logo_url_for_service(subscription.name, subscription.url)
-        
-        # Recalculate next payment date
-        subscription.calculate_next_payment_date()
+                # Upload new logo
+                subscription.logo_url = handle_image_upload(logo_file, current_user.id)
+
+        # Handle logo removal
+        if 'remove_logo' in request.form and subscription.logo_url:
+            try:
+                os.remove(subscription.logo_url[1:])  # Remove leading slash
+                subscription.logo_url = None
+            except Exception as e:
+                logging.error(f"Error deleting logo: {str(e)}")
+
+        # Handle reminders
+        if enable_reminders:
+            # Delete existing reminders
+            for reminder in reminders:
+                db.session.delete(reminder)
+            
+            # Add new reminders (max 3)
+            reminder_count = min(int(request.form.get('reminder_count', 0)), 3)
+            
+            for i in range(1, reminder_count + 1):
+                days_before = int(request.form.get(f'days_before_{i}', 7))
+                email_notification = f'email_notification_{i}' in request.form
+                push_notification = f'push_notification_{i}' in request.form
+                
+                reminder = Reminder(
+                    user_id=current_user.id,
+                    subscription_id=id,
+                    days_before=days_before,
+                    email_notification=email_notification,
+                    push_notification=push_notification
+                )
+                
+                db.session.add(reminder)
+        else:
+            # Delete all reminders if disabled
+            for reminder in reminders:
+                db.session.delete(reminder)
         
         db.session.commit()
-        
         flash('Subscription updated successfully', 'success')
         return redirect(url_for('dashboard'))
     
-    # Format date for form
-    subscription.formatted_start_date = subscription.start_date.strftime('%Y-%m-%d')
-    
-    return render_template('edit_subscription.html', subscription=subscription)
+    return render_template('edit_subscription.html', subscription=subscription, reminders=reminders)
 
 @app.route('/subscriptions/delete/<int:id>', methods=['POST'])
 @login_required
@@ -489,6 +483,11 @@ def export_csv():
     
     csv_data = []
     for sub in subscriptions:
+        # Get reminders for this subscription
+        reminders = []
+        for reminder in sub.reminders:
+            reminders.append(f"{reminder.days_before} days (Email: {reminder.email_notification}, Push: {reminder.push_notification})")
+        
         csv_data.append({
             'Name': sub.name,
             'URL': sub.url,
@@ -499,7 +498,10 @@ def export_csv():
             'Start Date': sub.start_date.strftime('%Y-%m-%d'),
             'Next Payment Date': sub.next_payment_date.strftime('%Y-%m-%d') if sub.next_payment_date else '',
             'Notes': sub.notes,
-            'Active': 'Yes' if sub.is_active else 'No'
+            'Active': 'Yes' if sub.is_active else 'No',
+            'Created At': sub.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+            'Updated At': sub.updated_at.strftime('%Y-%m-%d %H:%M:%S'),
+            'Reminders': '; '.join(reminders) if reminders else ''
         })
     
     # Create a CSV in memory
@@ -528,25 +530,20 @@ def import_csv():
         return redirect(url_for('dashboard'))
     
     file = request.files['csv_file']
-    
     if file.filename == '':
         flash('No file selected', 'danger')
         return redirect(url_for('dashboard'))
     
     if not file.filename.endswith('.csv'):
-        flash('File must be a CSV', 'danger')
+        flash('Please upload a CSV file', 'danger')
         return redirect(url_for('dashboard'))
     
     try:
         # Read CSV file
-        csv_content = file.read().decode('utf-8')
-        df = pd.read_csv(io.StringIO(csv_content))
+        stream = io.StringIO(file.stream.read().decode("UTF8"), newline=None)
+        csv_data = csv.DictReader(stream)
         
-        # Disable autocommit to ensure transaction integrity
-        db.session.begin_nested()
-        
-        # Process each row
-        for _, row in df.iterrows():
+        for row in csv_data:
             name = row['Name']
             url = row.get('URL', '')
             logo_url = row.get('Logo URL', '')  # Get logo URL if it exists
@@ -582,6 +579,10 @@ def import_csv():
                 existing_sub.notes = notes
                 existing_sub.is_active = is_active
                 existing_sub.calculate_next_payment_date()
+                
+                # Clear existing reminders
+                for reminder in existing_sub.reminders:
+                    db.session.delete(reminder)
             else:
                 # Create new subscription
                 from utils import get_logo_url_for_service
@@ -606,21 +607,39 @@ def import_csv():
                 
                 # Need to flush to get the ID before creating reminders
                 db.session.flush()
-                
-                # Create default reminders for new subscription only if it's not a lifetime subscription
-                if subscription.billing_cycle != 'lifetime':
-                    # Default reminder days
-                    default_days = [1, 7, 14]
-                    
-                    for days in default_days:
+            
+            # Process reminders if provided
+            if 'Reminders' in row and row['Reminders']:
+                reminder_strings = row['Reminders'].split(';')
+                for reminder_str in reminder_strings:
+                    try:
+                        # Parse reminder string (e.g., "7 days (Email: True, Push: False)")
+                        days = int(reminder_str.split(' days')[0])
+                        email = 'Email: True' in reminder_str
+                        push = 'Push: True' in reminder_str
+                        
                         reminder = Reminder(
                             user_id=current_user.id,
-                            subscription_id=subscription.id,
+                            subscription_id=existing_sub.id if existing_sub else subscription.id,
                             days_before=days,
-                            email_notification=True,
-                            push_notification=False
+                            email_notification=email,
+                            push_notification=push
                         )
                         db.session.add(reminder)
+                    except (ValueError, IndexError):
+                        continue
+            elif not existing_sub and subscription.billing_cycle != 'lifetime':
+                # Create default reminders for new subscription
+                default_days = [1, 7, 14]
+                for days in default_days:
+                    reminder = Reminder(
+                        user_id=current_user.id,
+                        subscription_id=subscription.id,
+                        days_before=days,
+                        email_notification=True,
+                        push_notification=False
+                    )
+                    db.session.add(reminder)
         
         # Commit all changes if successful
         db.session.commit()
@@ -743,6 +762,18 @@ def set_exchange_rate_api_key():
     except Exception as e:
         logger.error(f"Error setting API key: {str(e)}")
         return jsonify({'success': False, 'message': str(e)}), 500
+
+@app.route('/api/mark_paid/<int:subscription_id>', methods=['POST'])
+@login_required
+def mark_paid(subscription_id):
+    subscription = Subscription.query.filter_by(id=subscription_id, user_id=current_user.id).first_or_404()
+    
+    # Update the next payment date based on the billing cycle
+    if subscription.billing_cycle != 'lifetime':
+        subscription.calculate_next_payment_date()
+        db.session.commit()
+    
+    return jsonify({'success': True, 'next_payment_date': subscription.next_payment_date.strftime('%Y-%m-%d') if subscription.next_payment_date else None})
 
 # Helper functions
 def create_default_reminders(user):

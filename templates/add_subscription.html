@@ -96,6 +96,62 @@
                         <label for="notes" class="form-label" data-i18n="subscription.notes">Notes</label>
                         <textarea class="form-control" id="notes" name="notes" rows="3"></textarea>
                     </div>
+
+                    <!-- Reminders Toggle -->
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="enable_reminders" name="enable_reminders"
+                            checked>
+                        <label class="form-check-label" for="enable_reminders"
+                            data-i18n="subscription.enable_reminders">Enable Payment Reminders</label>
+                    </div>
+
+                    <!-- Reminders Section -->
+                    <div class="card mb-3" id="reminders-section">
+                        <div class="card-header">
+                            <h5 class="mb-0" data-i18n="edit_subscription.reminders">Payment Reminders</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="text-muted mb-3" data-i18n="edit_subscription.reminders_info">Configure up to 3
+                                reminders before payment date:</p>
+                            <div id="reminders-container">
+                                <!-- Initial reminder -->
+                                <div class="reminder-item mb-3">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <label class="form-label" data-i18n="reminder.days_before">Days Before
+                                                Payment</label>
+                                            <input type="number" class="form-control" name="days_before_1" value="7"
+                                                min="1" max="30">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label"
+                                                data-i18n="reminder.notification_type">Notification Type</label>
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input"
+                                                    name="email_notification_1" checked>
+                                                <label class="form-check-label" data-i18n="reminder.email">Email</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input"
+                                                    name="push_notification_1">
+                                                <label class="form-check-label" data-i18n="reminder.push">Push
+                                                    Notification</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label class="form-label">&nbsp;</label>
+                                            <button type="button" class="btn btn-danger d-block w-100 remove-reminder"
+                                                data-i18n="reminder.remove">Remove</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <input type="hidden" name="reminder_count" id="reminder-count" value="1">
+                            <button type="button" class="btn btn-secondary" id="add-reminder"
+                                data-i18n="reminder.add">Add Reminder</button>
+                        </div>
+                    </div>
+
                     <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                         <a href="{{ url_for('dashboard') }}" class="btn btn-secondary me-md-2"
                             data-i18n="general.cancel">Cancel</a>
@@ -148,6 +204,14 @@
     const removeLogoBtn = document.getElementById('removeLogoBtn');
     const urlInput = document.getElementById('url');
     const fetchFaviconBtn = document.getElementById('fetchFaviconBtn');
+
+    // Reminders toggle functionality
+    const enableRemindersCheckbox = document.getElementById('enable_reminders');
+    const remindersSection = document.getElementById('reminders-section');
+
+    enableRemindersCheckbox.addEventListener('change', function () {
+        remindersSection.style.display = this.checked ? 'block' : 'none';
+    });
 
     function updateLogoPreview(src) {
         if (src) {
@@ -241,5 +305,65 @@
         };
         img.src = faviconUrl;
     });
+
+    // Reminders functionality
+    const remindersContainer = document.getElementById('reminders-container');
+    const addReminderBtn = document.getElementById('add-reminder');
+    const reminderCountInput = document.getElementById('reminder-count');
+    const maxReminders = 3;
+
+    function updateReminderCount() {
+        const count = remindersContainer.children.length;
+        reminderCountInput.value = count;
+        addReminderBtn.disabled = count >= maxReminders;
+    }
+
+    function createReminderElement(index) {
+        const reminderDiv = document.createElement('div');
+        reminderDiv.className = 'reminder-item mb-3';
+        reminderDiv.innerHTML = `
+            <div class="row">
+                <div class="col-md-4">
+                    <label class="form-label" data-i18n="reminder.days_before">Days Before Payment</label>
+                    <input type="number" class="form-control" name="days_before_${index}" value="7" min="1" max="30">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label" data-i18n="reminder.notification_type">Notification Type</label>
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" name="email_notification_${index}" checked>
+                        <label class="form-check-label" data-i18n="reminder.email">Email</label>
+                    </div>
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" name="push_notification_${index}">
+                        <label class="form-check-label" data-i18n="reminder.push">Push Notification</label>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">&nbsp;</label>
+                    <button type="button" class="btn btn-danger d-block w-100 remove-reminder" data-i18n="reminder.remove">Remove</button>
+                </div>
+            </div>
+        `;
+        return reminderDiv;
+    }
+
+    addReminderBtn.addEventListener('click', function () {
+        if (remindersContainer.children.length < maxReminders) {
+            const newIndex = remindersContainer.children.length + 1;
+            const reminderElement = createReminderElement(newIndex);
+            remindersContainer.appendChild(reminderElement);
+            updateReminderCount();
+        }
+    });
+
+    remindersContainer.addEventListener('click', function (e) {
+        if (e.target.classList.contains('remove-reminder')) {
+            e.target.closest('.reminder-item').remove();
+            updateReminderCount();
+        }
+    });
+
+    // Initial count update
+    updateReminderCount();
 </script>
 {% endblock %}
