@@ -99,7 +99,12 @@
     "one_time": "Jednorázové",
     "created_at": "Vytvořeno:",
     "updated_at": "Poslední aktualizace:",
-    "delete": "Smazat předplatné"
+    "delete": "Smazat předplatné",
+    "enable_reminders": "Povolit připomenutí plateb",
+    "mark_paid": "Označit jako zaplaceno",
+    "mark_paid_confirmation": "Opravdu chcete označit tuto platbu jako zaplacenou?",
+    "confirm_paid": "Potvrdit platbu",
+    "payment_due": "Platba splatná"
   },
   "reminder": {
     "days_before": "Dny před platbou",

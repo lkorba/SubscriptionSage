@@ -99,7 +99,12 @@
     "one_time": "Jednorazowa",
     "created_at": "Utworzono:",
     "updated_at": "Ostatnia aktualizacja:",
-    "delete": "Usuń Subskrypcję"
+    "delete": "Usuń Subskrypcję",
+    "enable_reminders": "Włącz Przypomnienia o Płatnościach",
+    "mark_paid": "Oznacz jako Opłacone",
+    "mark_paid_confirmation": "Czy na pewno chcesz oznaczyć tę płatność jako opłaconą?",
+    "confirm_paid": "Potwierdź Płatność",
+    "payment_due": "Płatność Wymagana"
   },
   "reminder": {
     "days_before": "Dni Przed Płatnością",
