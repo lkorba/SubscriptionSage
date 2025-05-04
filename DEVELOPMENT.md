@@ -54,7 +54,25 @@ MAIL_PORT=587
 MAIL_USERNAME=your_email@gmail.com
 MAIL_PASSWORD=your_app_password
 MAIL_DEFAULT_SENDER=noreply@subscriptiontracker.com
+EXCHANGE_RATE_API_KEY=your_api_key_here
 ```
+
+#### Getting an Exchange Rate API Key
+
+The application uses the Exchange Rate API for currency conversion. To get an API key:
+
+1. Visit [Exchange Rate API](https://www.exchangerate-api.com/)
+2. Sign up for a free account
+3. Navigate to your dashboard
+4. Copy your API key
+5. Add it to your `.env` file as `EXCHANGE_RATE_API_KEY`
+
+The free tier includes:
+- 1,500 requests per month
+- Updates every 24 hours
+- Support for USD, EUR, CZK, and PLN
+
+If the API is unavailable, the application will use default exchange rates.
 
 Important security notes:
 - The `.env` file is automatically ignored by git (it's in `.gitignore`)
