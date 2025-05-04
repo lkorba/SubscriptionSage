@@ -17,12 +17,45 @@
                     </div>
                     <div class="mb-3">
                         <label for="url" class="form-label" data-i18n="subscription.url">URL</label>
-                        <input type="url" class="form-control" id="url" name="url" placeholder="https://example.com">
+                        <div class="input-group">
+                            <input type="url" class="form-control" id="url" name="url"
+                                placeholder="https://example.com">
+                            <button class="btn btn-outline-secondary" type="button" id="fetchFaviconBtn">
+                                <i class="fas fa-image"></i>
+                            </button>
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label for="logo" class="form-label" data-i18n="subscription.logo">Logo</label>
-                        <input type="file" class="form-control" id="logo" name="logo" accept="image/*">
-                        <div class="form-text" data-i18n="subscription.logo_help">Optional. Max size: 200x200px, 50KB.</div>
+                        <div class="card mb-2">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="logo" class="form-label"
+                                                data-i18n="subscription.upload_logo">Upload Logo</label>
+                                            <input type="file" class="form-control" id="logo" name="logo"
+                                                accept="image/*">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="text-center">
+                                            <img id="logoPreview" src="" alt="Logo preview" class="img-thumbnail"
+                                                style="max-width: 200px; max-height: 200px; display: none;">
+                                            <div id="noLogoText" class="text-muted" data-i18n="subscription.no_logo">No
+                                                logo selected</div>
+                                            <button type="button" class="btn btn-danger btn-sm mt-2" id="removeLogoBtn"
+                                                style="display: none;">
+                                                <i class="fas fa-trash"></i> <span
+                                                    data-i18n="subscription.remove_logo">Remove Logo</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-text" data-i18n="subscription.logo_help">Optional. Max size: 200x200px, 50KB.
+                        </div>
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-6">
@@ -41,7 +74,8 @@
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label for="billing_cycle" class="form-label" data-i18n="subscription.billing_cycle">Billing Cycle</label>
+                            <label for="billing_cycle" class="form-label" data-i18n="subscription.billing_cycle">Billing
+                                Cycle</label>
                             <select class="form-select" id="billing_cycle" name="billing_cycle" required>
                                 <option value="weekly" data-i18n="billing.weekly">Weekly</option>
                                 <option value="monthly" selected data-i18n="billing.monthly">Monthly</option>
@@ -52,8 +86,10 @@
                             </select>
                         </div>
                         <div class="col-md-6">
-                            <label for="start_date" class="form-label" data-i18n="subscription.start_date">Start Date</label>
-                            <input type="date" class="form-control" id="start_date" name="start_date" value="{{ today }}">
+                            <label for="start_date" class="form-label" data-i18n="subscription.start_date">Start
+                                Date</label>
+                            <input type="date" class="form-control" id="start_date" name="start_date"
+                                value="{{ today }}">
                         </div>
                     </div>
                     <div class="mb-3">
@@ -61,7 +97,8 @@
                         <textarea class="form-control" id="notes" name="notes" rows="3"></textarea>
                     </div>
                     <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                        <a href="{{ url_for('dashboard') }}" class="btn btn-secondary me-md-2" data-i18n="general.cancel">Cancel</a>
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-secondary me-md-2"
+                            data-i18n="general.cancel">Cancel</a>
                         <button type="submit" class="btn btn-primary" data-i18n="general.save">Save</button>
                     </div>
                 </form>
@@ -78,7 +115,7 @@
                 <div class="list-group">
                     {% for sub in suggested_subscriptions %}
                     <button type="button" class="list-group-item list-group-item-action"
-                            onclick="fillSubscriptionDetails('{{ sub.name }}', '{{ sub.url }}')">
+                        onclick="fillSubscriptionDetails('{{ sub.name }}', '{{ sub.url }}')">
                         <div class="d-flex align-items-center">
                             {% if sub.logo_url %}
                             <img src="{{ sub.logo_url }}" alt="{{ sub.name }} logo" class="me-2" width="24" height="24">
@@ -95,6 +132,7 @@
 {% endblock %}
 
 {% block scripts %}
+{{ super() }}
 <script>
     function fillSubscriptionDetails(name, url) {
         document.getElementById('name').value = name;
@@ -102,5 +140,106 @@
         // Focus on the amount field for user to continue inputting
         document.getElementById('amount').focus();
     }
+
+    // Logo preview and management
+    const logoInput = document.getElementById('logo');
+    const logoPreview = document.getElementById('logoPreview');
+    const noLogoText = document.getElementById('noLogoText');
+    const removeLogoBtn = document.getElementById('removeLogoBtn');
+    const urlInput = document.getElementById('url');
+    const fetchFaviconBtn = document.getElementById('fetchFaviconBtn');
+
+    function updateLogoPreview(src) {
+        if (src) {
+            logoPreview.src = src;
+            logoPreview.style.display = 'block';
+            noLogoText.style.display = 'none';
+            removeLogoBtn.style.display = 'block';
+        } else {
+            logoPreview.src = '';
+            logoPreview.style.display = 'none';
+            noLogoText.style.display = 'block';
+            removeLogoBtn.style.display = 'none';
+        }
+    }
+
+    logoInput.addEventListener('change', function (e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                updateLogoPreview(e.target.result);
+                // Clear any favicon URL when file is selected
+                let faviconInput = document.getElementById('favicon_url');
+                if (faviconInput) {
+                    faviconInput.remove();
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    removeLogoBtn.addEventListener('click', function () {
+        logoInput.value = '';
+        updateLogoPreview('');
+
+        // Remove favicon URL if it exists
+        let faviconInput = document.getElementById('favicon_url');
+        if (faviconInput) {
+            faviconInput.remove();
+        }
+
+        // Add a hidden input to indicate logo removal
+        let removeLogoInput = document.getElementById('remove_logo');
+        if (!removeLogoInput) {
+            removeLogoInput = document.createElement('input');
+            removeLogoInput.type = 'hidden';
+            removeLogoInput.id = 'remove_logo';
+            removeLogoInput.name = 'remove_logo';
+            removeLogoInput.value = '1';
+            document.querySelector('form').appendChild(removeLogoInput);
+        }
+    });
+
+    // Favicon fetching
+    fetchFaviconBtn.addEventListener('click', function () {
+        const url = urlInput.value;
+        if (!url) {
+            alert('Please enter a URL first');
+            return;
+        }
+
+        // Try to get favicon from the URL
+        const faviconUrl = new URL(url).origin + '/favicon.ico';
+
+        // Create a temporary image to check if the favicon exists
+        const img = new Image();
+        img.onload = function () {
+            updateLogoPreview(faviconUrl);
+            // Create a hidden input to store the favicon URL
+            let faviconInput = document.getElementById('favicon_url');
+            if (!faviconInput) {
+                faviconInput = document.createElement('input');
+                faviconInput.type = 'hidden';
+                faviconInput.id = 'favicon_url';
+                faviconInput.name = 'favicon_url';
+                document.querySelector('form').appendChild(faviconInput);
+            }
+            faviconInput.value = faviconUrl;
+
+            // Clear file input when favicon is selected
+            logoInput.value = '';
+
+            // Remove remove_logo input if it exists
+            let removeLogoInput = document.getElementById('remove_logo');
+            if (removeLogoInput) {
+                removeLogoInput.remove();
+            }
+        };
+        img.onerror = function () {
+            alert('Could not find favicon for this URL. Please try a different URL or upload a logo manually.');
+        };
+        img.src = faviconUrl;
+    });
 </script>
 {% endblock %}

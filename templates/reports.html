@@ -276,7 +276,13 @@
                 <form id="apiKeyForm">
                     <div class="mb-3">
                         <label for="apiKey" class="form-label" data-i18n="reports.api_key">API Key</label>
-                        <input type="password" class="form-control" id="apiKey" name="apiKey" required>
+                        <div class="input-group">
+                            <input type="password" class="form-control" id="apiKey" name="apiKey"
+                                value="{{ current_user.exchange_rate_api_key or '' }}" required>
+                            <button class="btn btn-outline-secondary" type="button" id="toggleApiKey">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
                         <div class="form-text" data-i18n="reports.api_key_help">Enter your Exchange Rate API key. Get
                             one at <a href="https://www.exchangerate-api.com/" target="_blank">exchangerate-api.com</a>
                         </div>
@@ -505,6 +511,22 @@
     // Load exchange rates when page loads
     document.addEventListener('DOMContentLoaded', function () {
         loadExchangeRates();
+    });
+
+    // Toggle API key visibility
+    document.getElementById('toggleApiKey').addEventListener('click', function () {
+        const apiKeyInput = document.getElementById('apiKey');
+        const icon = this.querySelector('i');
+
+        if (apiKeyInput.type === 'password') {
+            apiKeyInput.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            apiKeyInput.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
     });
 </script>
 {% endblock %}

@@ -188,7 +188,7 @@ def add_subscription():
         
         start_date = datetime.strptime(start_date_str, '%Y-%m-%d') if start_date_str else datetime.utcnow()
         
-        # Handle logo upload if provided
+        # Handle logo
         logo_url = None
         if 'logo' in request.files and request.files['logo'].filename:
             from utils import handle_image_upload
@@ -198,10 +198,10 @@ def add_subscription():
             
             if not logo_url:
                 flash('Logo upload failed. Please ensure it is a valid image under 50KB and 200x200px.', 'warning')
-                # If upload fails, use the default logo
-                from utils import get_logo_url_for_service
-                logo_url = get_logo_url_for_service(name)
-        else:
+        elif request.form.get('favicon_url'):
+            # Use the provided favicon URL
+            logo_url = request.form['favicon_url']
+        elif not request.form.get('remove_logo'):
             # Use default logo based on service name, and try to get favicon from the URL if provided
             from utils import get_logo_url_for_service
             logo_url = get_logo_url_for_service(name, url)
@@ -301,18 +301,35 @@ def edit_subscription(id):
         
         subscription.start_date = datetime.strptime(start_date_str, '%Y-%m-%d') if start_date_str else subscription.start_date
         
-        # Handle logo upload if provided
-        keep_logo = 'keep_logo' in request.form
+        # Handle logo
         if 'logo' in request.files and request.files['logo'].filename:
             from utils import handle_image_upload
             logo_url = handle_image_upload(request.files['logo'], subscription.id)
             
             if logo_url:
+                # Delete old logo file if it exists and is in our uploads directory
+                if subscription.logo_url and subscription.logo_url.startswith('/static/uploads/'):
+                    try:
+                        os.remove(subscription.logo_url[1:])  # Remove leading slash
+                    except Exception as e:
+                        logging.error(f"Error deleting old logo file: {str(e)}")
+                
                 subscription.logo_url = logo_url
             else:
                 flash('Logo upload failed. Please ensure it is a valid image under 50KB and 200x200px.', 'warning')
-        # Update logo URL if name changed and user didn't choose to keep the logo
-        elif old_name != subscription.name and not keep_logo:
+        elif request.form.get('favicon_url'):
+            # Use the provided favicon URL
+            subscription.logo_url = request.form['favicon_url']
+        elif request.form.get('remove_logo'):
+            # Remove the logo
+            if subscription.logo_url and subscription.logo_url.startswith('/static/uploads/'):
+                try:
+                    os.remove(subscription.logo_url[1:])  # Remove leading slash
+                except Exception as e:
+                    logging.error(f"Error deleting logo file: {str(e)}")
+            subscription.logo_url = None
+        elif old_name != subscription.name:
+            # Update logo URL if name changed
             from utils import get_logo_url_for_service
             subscription.logo_url = get_logo_url_for_service(subscription.name, subscription.url)
         

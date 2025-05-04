@@ -135,7 +135,18 @@
     "upload_import": "Wgraj i Importuj",
     "monthly_spending_in": "Miesięczne Wydatki ({{currency}})",
     "amount_in": "Kwota ({{currency}})",
-    "monthly_spending_by_cycle": "Miesięczne Wydatki według Cyklu Rozliczeniowego"
+    "exchange_rates": "Kursy Walut",
+    "refresh_rates": "Odśwież Kursy",
+    "refreshing": "Odświeżanie...",
+    "manage_api_key": "Zarządzaj Kluczem API",
+    "base_currency": "Waluta Bazowa",
+    "target_currency": "Waluta Docelowa",
+    "rate": "Kurs",
+    "last_updated": "Ostatnia Aktualizacja",
+    "api_key_settings": "Ustawienia API Kursów Walut",
+    "api_key": "Klucz API",
+    "api_key_help": "Wprowadź swój klucz API kursów walut. Uzyskaj go na exchangerate-api.com",
+    "save_api_key": "Zapisz Klucz API"
   },
   "settings": {
     "title": "Ustawienia Konta",
