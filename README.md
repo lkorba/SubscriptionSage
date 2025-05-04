@@ -21,16 +21,22 @@ In today's digital economy, people often subscribe to numerous services across d
 
 ## Technology Stack
 
-- **Backend**: Flask (Python)
-- **Database**: PostgreSQL with SQLAlchemy ORM
+- **Backend**: Flask (Python 3.11)
+- **Database**: PostgreSQL 16 with SQLAlchemy ORM
 - **Frontend**: HTML, CSS, JavaScript
 - **Authentication**: Flask-Login
 - **Email Notifications**: Flask-Mail
 - **Background Tasks**: APScheduler
+- **Development**: Docker & Dev Containers
 
-## Getting Started
+## Quick Start
 
-For information on setting up a development environment, please see the [Development Guide](DEVELOPMENT.md).
+1. Clone the repository
+2. Open in VS Code with Dev Containers extension
+3. Create a `.env` file with your email settings (see [Development Guide](DEVELOPMENT.md))
+4. The application will be available at http://localhost:5000
+
+For detailed setup instructions, please see the [Development Guide](DEVELOPMENT.md).
 
 ## Usage
 
@@ -46,7 +52,7 @@ For information on setting up a development environment, please see the [Develop
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions are welcome! Please feel free to submit a Pull Request. For development setup instructions, see the [Development Guide](DEVELOPMENT.md).
 
 ## License
 
