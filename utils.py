@@ -5,6 +5,7 @@ from flask import render_template
 from flask_mail import Message
 from app import app, db, mail
 from models import ExchangeRate
+from flask_login import current_user
 
 logger = logging.getLogger(__name__)
 
@@ -14,24 +15,39 @@ def fetch_exchange_rates():
     Supports USD, EUR, CZK, and PLN.
     """
     try:
+        # Get API key from current user
+        api_key = None
+        if current_user and current_user.is_authenticated:
+            api_key = current_user.exchange_rate_api_key
+            logger.info(f"Using API key from user {current_user.id}")
+        
+        if not api_key:
+            logger.error("No API key available for exchange rates")
+            add_default_exchange_rates()
+            return
+        
         # Using Exchange Rate API (free tier)
-        api_key = app.config.get('EXCHANGE_RATE_API_KEY', 'fallback_key')
         base_url = "https://open.er-api.com/v6/latest/"
         
         # Fetch rates for each base currency
         base_currencies = ['USD', 'EUR', 'CZK', 'PLN']
         
         for base in base_currencies:
-            url = f"{base_url}{base}"
+            url = f"{base_url}{base}?apikey={api_key}"
+            logger.info(f"Fetching rates for {base} from {url}")
             response = requests.get(url)
             
             if response.status_code == 200:
                 data = response.json()
                 rates = data.get('rates', {})
+                logger.info(f"Received rates for {base}: {rates}")
                 
                 # Update rates for each target currency
                 for target in base_currencies:
                     if target != base and target in rates:
+                        rate_value = rates[target]
+                        logger.info(f"Updating rate {base}->{target}: {rate_value}")
+                        
                         # Check if rate exists
                         exchange_rate = ExchangeRate.query.filter_by(
                             base_currency=base,
@@ -39,26 +55,30 @@ def fetch_exchange_rates():
                         ).first()
                         
                         if exchange_rate:
-                            exchange_rate.rate = rates[target]
+                            exchange_rate.rate = rate_value
                             exchange_rate.updated_at = datetime.utcnow()
+                            logger.info(f"Updated existing rate {base}->{target}")
                         else:
                             exchange_rate = ExchangeRate(
                                 base_currency=base,
                                 target_currency=target,
-                                rate=rates[target]
+                                rate=rate_value
                             )
                             db.session.add(exchange_rate)
+                            logger.info(f"Added new rate {base}->{target}")
                 
                 db.session.commit()
                 logger.info(f"Exchange rates for {base} updated successfully")
             else:
                 logger.error(f"Failed to fetch exchange rates for {base}: {response.status_code}")
+                logger.error(f"Response content: {response.text}")
                 
     except Exception as e:
         logger.error(f"Error updating exchange rates: {str(e)}")
         
     # If no exchange rates were fetched, add default ones
     if ExchangeRate.query.count() == 0:
+        logger.info("No exchange rates found, adding default rates")
         add_default_exchange_rates()
 
 def add_default_exchange_rates():

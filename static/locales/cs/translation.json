@@ -135,7 +135,18 @@
     "upload_import": "Nahrát a importovat",
     "monthly_spending_in": "Měsíční výdaje ({{currency}})",
     "amount_in": "Částka ({{currency}})",
-    "monthly_spending_by_cycle": "Měsíční výdaje podle fakturačního cyklu"
+    "exchange_rates": "Směnné kurzy",
+    "refresh_rates": "Obnovit kurzy",
+    "refreshing": "Obnovování...",
+    "manage_api_key": "Spravovat API klíč",
+    "base_currency": "Základní měna",
+    "target_currency": "Cílová měna",
+    "rate": "Kurz",
+    "last_updated": "Poslední aktualizace",
+    "api_key_settings": "Nastavení API pro směnné kurzy",
+    "api_key": "API klíč",
+    "api_key_help": "Zadejte svůj API klíč pro směnné kurzy. Získejte ho na exchangerate-api.com",
+    "save_api_key": "Uložit API klíč"
   },
   "settings": {
     "title": "Nastavení účtu",

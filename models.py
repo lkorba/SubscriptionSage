@@ -11,9 +11,10 @@ class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    password_hash = db.Column(db.String(256), nullable=False)
+    password_hash = db.Column(db.String(128))
     language = db.Column(db.String(10), default="en")
     preferred_currency = db.Column(db.String(3), default="USD")
+    exchange_rate_api_key = db.Column(db.String(128))
     
     # Relationships
     subscriptions = db.relationship('Subscription', backref='user', lazy='dynamic', cascade='all, delete-orphan')

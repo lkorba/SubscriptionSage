@@ -6,6 +6,7 @@ from sqlalchemy.orm import DeclarativeBase
 from flask_login import LoginManager
 from werkzeug.middleware.proxy_fix import ProxyFix
 from flask_mail import Mail
+from flask_migrate import Migrate
 
 # Set up logging
 logging.basicConfig(level=logging.DEBUG)
@@ -19,6 +20,7 @@ class Base(DeclarativeBase):
 db = SQLAlchemy(model_class=Base)
 login_manager = LoginManager()
 mail = Mail()
+migrate = Migrate()
 
 # Create app
 app = Flask(__name__)
@@ -45,6 +47,7 @@ db.init_app(app)
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 mail.init_app(app)
+migrate.init_app(app, db)
 
 with app.app_context():
     # Import models

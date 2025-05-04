@@ -5,6 +5,38 @@
 {% block content %}
 <h1 class="mb-4" data-i18n="reports.title">Subscription Reports</h1>
 
+<!-- Exchange Rates Section -->
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0" data-i18n="reports.exchange_rates">Exchange Rates</h5>
+        <div>
+            <button class="btn btn-primary btn-sm me-2" onclick="refreshExchangeRates()" id="refreshRatesBtn">
+                <i class="fas fa-sync-alt me-1"></i> <span data-i18n="reports.refresh_rates">Refresh Rates</span>
+            </button>
+            <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#apiKeyModal">
+                <i class="fas fa-key me-1"></i> <span data-i18n="reports.manage_api_key">Manage API Key</span>
+            </button>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover" id="exchangeRatesTable">
+                <thead>
+                    <tr>
+                        <th data-i18n="reports.base_currency">Base Currency</th>
+                        <th data-i18n="reports.target_currency">Target Currency</th>
+                        <th data-i18n="reports.rate">Rate</th>
+                        <th data-i18n="reports.last_updated">Last Updated</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Exchange rates will be populated here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
 <!-- Summary Cards -->
 <div class="row mb-4">
     <div class="col-md-4">
@@ -19,7 +51,8 @@
         <div class="card text-center">
             <div class="card-body">
                 <h5 class="card-title" data-i18n="reports.monthly_spending">Monthly Spending</h5>
-                <p class="card-text display-4">{{ '%0.2f'|format(total_monthly) }} {{ current_user.preferred_currency }}</p>
+                <p class="card-text display-4">{{ '%0.2f'|format(total_monthly) }} {{ current_user.preferred_currency }}
+                </p>
             </div>
         </div>
     </div>
@@ -27,7 +60,8 @@
         <div class="card text-center">
             <div class="card-body">
                 <h5 class="card-title" data-i18n="reports.yearly_spending">Yearly Spending</h5>
-                <p class="card-text display-4">{{ '%0.2f'|format(total_yearly) }} {{ current_user.preferred_currency }}</p>
+                <p class="card-text display-4">{{ '%0.2f'|format(total_yearly) }} {{ current_user.preferred_currency }}
+                </p>
             </div>
         </div>
     </div>
@@ -57,7 +91,8 @@
                     <div class="list-group-item list-group-item-action">
                         <div class="d-flex w-100 justify-content-between">
                             <h5 class="mb-1">{{ payment.name }}</h5>
-                            <span class="badge {% if payment.next_payment_date.date() <= current_datetime.date() %}bg-danger{% else %}bg-primary{% endif %}">
+                            <span
+                                class="badge {% if payment.next_payment_date.date() <= current_datetime.date() %}bg-danger{% else %}bg-primary{% endif %}">
                                 {{ payment.next_payment_date.strftime('%Y-%m-%d') }}
                             </span>
                         </div>
@@ -65,7 +100,8 @@
                             {{ '%0.2f'|format(payment.amount) }} {{ payment.currency }}
                             {% if payment.currency != current_user.preferred_currency %}
                             <span class="text-muted small">
-                                (≈ {{ '%0.2f'|format(payment.amount_in_preferred) }} {{ current_user.preferred_currency }})
+                                (≈ {{ '%0.2f'|format(payment.amount_in_preferred) }} {{ current_user.preferred_currency
+                                }})
                             </span>
                             {% endif %}
                         </p>
@@ -91,9 +127,11 @@
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title" data-i18n="reports.csv_export">CSV Export</h5>
-                        <p class="card-text" data-i18n="reports.csv_description">Export your subscription data to a CSV file for use in spreadsheet applications.</p>
+                        <p class="card-text" data-i18n="reports.csv_description">Export your subscription data to a CSV
+                            file for use in spreadsheet applications.</p>
                         <a href="{{ url_for('export_csv') }}" class="btn btn-primary">
-                            <i class="fas fa-download me-1"></i> <span data-i18n="reports.download_csv">Download CSV</span>
+                            <i class="fas fa-download me-1"></i> <span data-i18n="reports.download_csv">Download
+                                CSV</span>
                         </a>
                     </div>
                 </div>
@@ -102,7 +140,8 @@
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title" data-i18n="reports.import_data">Import Data</h5>
-                        <p class="card-text" data-i18n="reports.import_description">Upload a CSV file to import subscription data.</p>
+                        <p class="card-text" data-i18n="reports.import_description">Upload a CSV file to import
+                            subscription data.</p>
                         <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#importModal">
                             <i class="fas fa-upload me-1"></i> <span data-i18n="reports.import_csv">Import CSV</span>
                         </button>
@@ -139,7 +178,8 @@
                         <td>
                             <div class="d-flex align-items-center">
                                 {% if subscription.logo_url %}
-                                <img src="{{ subscription.logo_url }}" alt="{{ subscription.name }} logo" class="me-2" width="24" height="24">
+                                <img src="{{ subscription.logo_url }}" alt="{{ subscription.name }} logo" class="me-2"
+                                    width="24" height="24">
                                 {% endif %}
                                 <span>
                                     {% if subscription.url %}
@@ -153,15 +193,17 @@
                         <td>
                             <!-- Original amount -->
                             <div>{{ '%0.2f'|format(subscription.amount) }} {{ subscription.currency }}</div>
-                            
+
                             <!-- Converted amount in preferred currency (if different) -->
                             {% if subscription.currency != current_user.preferred_currency %}
                             <div class="text-muted small">
-                                ≈ {{ '%0.2f'|format(subscription.amount_in_preferred) }} {{ current_user.preferred_currency }}
+                                ≈ {{ '%0.2f'|format(subscription.amount_in_preferred) }} {{
+                                current_user.preferred_currency }}
                             </div>
                             {% endif %}
                         </td>
-                        <td data-i18n="billing.{{ subscription.billing_cycle }}">{{ subscription.billing_cycle.capitalize() }}</td>
+                        <td data-i18n="billing.{{ subscription.billing_cycle }}">{{
+                            subscription.billing_cycle.capitalize() }}</td>
                         <td>
                             <!-- Monthly cost in preferred currency -->
                             {{ '%0.2f'|format(subscription.monthly_cost) }} {{ current_user.preferred_currency }}
@@ -174,7 +216,8 @@
                             {% if subscription.billing_cycle == 'lifetime' %}
                             <span class="badge bg-secondary" data-i18n="subscription.one_time">One Time</span>
                             {% else %}
-                            {{ subscription.next_payment_date.strftime('%Y-%m-%d') if subscription.next_payment_date else '-' }}
+                            {{ subscription.next_payment_date.strftime('%Y-%m-%d') if subscription.next_payment_date
+                            else '-' }}
                             {% endif %}
                         </td>
                     </tr>
@@ -200,7 +243,8 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="importModalLabel" data-i18n="reports.import_subscriptions">Import Subscriptions</h5>
+                <h5 class="modal-title" id="importModalLabel" data-i18n="reports.import_subscriptions">Import
+                    Subscriptions</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -210,7 +254,36 @@
                         <input class="form-control" type="file" id="csv_file" name="csv_file" accept=".csv" required>
                     </div>
                     <div class="d-grid">
-                        <button type="submit" class="btn btn-primary" data-i18n="reports.upload_import">Upload & Import</button>
+                        <button type="submit" class="btn btn-primary" data-i18n="reports.upload_import">Upload &
+                            Import</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- API Key Modal -->
+<div class="modal fade" id="apiKeyModal" tabindex="-1" aria-labelledby="apiKeyModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="apiKeyModalLabel" data-i18n="reports.api_key_settings">Exchange Rate API
+                    Settings</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="apiKeyForm">
+                    <div class="mb-3">
+                        <label for="apiKey" class="form-label" data-i18n="reports.api_key">API Key</label>
+                        <input type="password" class="form-control" id="apiKey" name="apiKey" required>
+                        <div class="form-text" data-i18n="reports.api_key_help">Enter your Exchange Rate API key. Get
+                            one at <a href="https://www.exchangerate-api.com/" target="_blank">exchangerate-api.com</a>
+                        </div>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary" data-i18n="reports.save_api_key">Save API
+                            Key</button>
                     </div>
                 </form>
             </div>
@@ -220,8 +293,9 @@
 {% endblock %}
 
 {% block scripts %}
+{{ super() }}
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         // Chart initialization
         const ctx = document.getElementById('spendingChart').getContext('2d');
         const spendingChart = new Chart(ctx, {
@@ -238,59 +312,199 @@
                     label: 'Monthly Spending in {{ current_user.preferred_currency }}',
                     data: [
                         {{ spending_by_cycle.weekly }},
-                        {{ spending_by_cycle.monthly }},
+                {{ spending_by_cycle.monthly }},
                         {{ spending_by_cycle.quarterly }},
-                        {{ spending_by_cycle['bi-annually'] }},
-                        {{ spending_by_cycle.yearly }}
+        {{ spending_by_cycle['bi-annually'] }},
+        {{ spending_by_cycle.yearly }}
                     ],
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.8)',
-                        'rgba(54, 162, 235, 0.8)',
-                        'rgba(255, 206, 86, 0.8)',
-                        'rgba(75, 192, 192, 0.8)',
-                        'rgba(153, 102, 255, 0.8)'
-                    ],
-                    borderWidth: 1
+        backgroundColor: [
+        'rgba(255, 99, 132, 0.8)',
+        'rgba(54, 162, 235, 0.8)',
+        'rgba(255, 206, 86, 0.8)',
+        'rgba(75, 192, 192, 0.8)',
+        'rgba(153, 102, 255, 0.8)'
+    ],
+        borderWidth: 1
                 }]
             },
-            options: {
-                responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        title: {
-                            display: true,
-                            text: 'Amount in {{ current_user.preferred_currency }}'
-                        }
-                    }
-                },
-                plugins: {
-                    legend: {
-                        position: 'top',
-                    },
-                    title: {
-                        display: true,
-                        text: 'Monthly Spending by Billing Cycle'
-                    }
+        options: {
+        responsive: true,
+        scales: {
+            y: {
+                beginAtZero: true,
+                title: {
+                    display: true,
+                    text: 'Amount in {{ current_user.preferred_currency }}'
                 }
             }
+        },
+        plugins: {
+            legend: {
+                position: 'top'
+            },
+            title: {
+                display: true,
+                text: 'Monthly Spending by Billing Cycle'
+            }
+        }
+    }
         });
 
-        // Update chart when language changes
-        document.addEventListener('languageChanged', function() {
-            // Fixed labels for now - these would come from translations
-            spendingChart.data.labels = [
-                'Weekly',
-                'Monthly',
-                'Quarterly', 
-                'Bi-annually',
-                'Yearly'
-            ];
-            spendingChart.data.datasets[0].label = 'Monthly Spending in {{ current_user.preferred_currency }}';
-            spendingChart.options.plugins.title.text = 'Monthly Spending by Billing Cycle';
-            spendingChart.options.scales.y.title.text = 'Amount in {{ current_user.preferred_currency }}';
-            spendingChart.update();
+    // Update chart when language changes
+    document.addEventListener('languageChanged', function () {
+        spendingChart.data.labels = [
+            'Weekly',
+            'Monthly',
+            'Quarterly',
+            'Bi-annually',
+            'Yearly'
+        ];
+        spendingChart.data.datasets[0].label = 'Monthly Spending in {{ current_user.preferred_currency }}';
+        spendingChart.options.plugins.title.text = 'Monthly Spending by Billing Cycle';
+        spendingChart.options.scales.y.title.text = 'Amount in {{ current_user.preferred_currency }}';
+        spendingChart.update();
+    });
+    });
+
+    // Function to load exchange rates
+    function loadExchangeRates() {
+        fetch('/api/exchange_rates')
+            .then(response => response.json())
+            .then(data => {
+                const tbody = document.querySelector('#exchangeRatesTable tbody');
+                tbody.innerHTML = '';
+
+                const preferredCurrency = '{{ current_user.preferred_currency }}';
+                const currencies = ['USD', 'EUR', 'CZK', 'PLN'];
+
+                // First show rates where preferred currency is base
+                currencies.forEach(target => {
+                    if (target !== preferredCurrency) {
+                        const rate = data[preferredCurrency]?.[target] || 1.0;
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${preferredCurrency}</td>
+                            <td>${target}</td>
+                            <td>${rate.toFixed(4)}</td>
+                            <td>${new Date().toLocaleString()}</td>
+                        `;
+                        tbody.appendChild(row);
+                    }
+                });
+
+                // Then show rates where preferred currency is target
+                currencies.forEach(base => {
+                    if (base !== preferredCurrency) {
+                        const rate = data[base]?.[preferredCurrency] || 1.0;
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${base}</td>
+                            <td>${preferredCurrency}</td>
+                            <td>${rate.toFixed(4)}</td>
+                            <td>${new Date().toLocaleString()}</td>
+                        `;
+                        tbody.appendChild(row);
+                    }
+                });
+            })
+            .catch(error => {
+                console.error('Error loading exchange rates:', error);
+                showToast('error', 'Failed to load exchange rates');
+            });
+    }
+
+    // Function to refresh exchange rates
+    function refreshExchangeRates() {
+        const btn = document.getElementById('refreshRatesBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> <span data-i18n="reports.refreshing">Refreshing...</span>';
+
+        fetch('/api/refresh_exchange_rates', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    loadExchangeRates();
+                    showToast('success', 'Exchange rates refreshed successfully');
+                } else {
+                    showToast('error', data.message || 'Failed to refresh exchange rates');
+                }
+            })
+            .catch(error => {
+                showToast('error', 'Failed to refresh exchange rates');
+                console.error('Error:', error);
+            })
+            .finally(() => {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-sync-alt me-1"></i> <span data-i18n="reports.refresh_rates">Refresh Rates</span>';
+            });
+    }
+
+    // Function to show toast notifications
+    function showToast(type, message) {
+        const toast = document.createElement('div');
+        toast.className = `toast align-items-center text-white bg-${type} border-0`;
+        toast.setAttribute('role', 'alert');
+        toast.setAttribute('aria-live', 'assertive');
+        toast.setAttribute('aria-atomic', 'true');
+
+        toast.innerHTML = `
+            <div class="d-flex">
+                <div class="toast-body">
+                    ${message}
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        `;
+
+        const container = document.createElement('div');
+        container.className = 'toast-container position-fixed bottom-0 end-0 p-3';
+        container.appendChild(toast);
+        document.body.appendChild(container);
+
+        const bsToast = new bootstrap.Toast(toast);
+        bsToast.show();
+
+        toast.addEventListener('hidden.bs.toast', () => {
+            container.remove();
         });
+    }
+
+    // Handle API key form submission
+    document.getElementById('apiKeyForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        const apiKey = document.getElementById('apiKey').value;
+
+        fetch('/api/set_exchange_rate_api_key', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ api_key: apiKey })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showToast('success', 'API key saved successfully');
+                    bootstrap.Modal.getInstance(document.getElementById('apiKeyModal')).hide();
+                    refreshExchangeRates();
+                } else {
+                    showToast('error', data.message || 'Failed to save API key');
+                }
+            })
+            .catch(error => {
+                showToast('error', 'Failed to save API key');
+                console.error('Error:', error);
+            });
+    });
+
+    // Load exchange rates when page loads
+    document.addEventListener('DOMContentLoaded', function () {
+        loadExchangeRates();
     });
 </script>
 {% endblock %}

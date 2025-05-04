@@ -54,7 +54,6 @@ MAIL_PORT=587
 MAIL_USERNAME=your_email@gmail.com
 MAIL_PASSWORD=your_app_password
 MAIL_DEFAULT_SENDER=noreply@subscriptiontracker.com
-EXCHANGE_RATE_API_KEY=your_api_key_here
 ```
 
 #### Getting an Exchange Rate API Key
@@ -130,3 +129,74 @@ The development container includes:
 - All development is done inside a containerized environment
 - No need to install Python or PostgreSQL locally
 - Consistent development environment across all team members
+
+# Development Setup
+
+1. Clone the repository
+2. Create a virtual environment:
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
+3. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+4. Create a `.env` file in the root directory with the following variables:
+   ```
+   FLASK_APP=app.py
+   FLASK_ENV=development
+   SECRET_KEY=your_secret_key_here
+   MAIL_SERVER=smtp.gmail.com
+   MAIL_PORT=587
+   MAIL_USE_TLS=True
+   MAIL_USERNAME=your_email@gmail.com
+   MAIL_PASSWORD=your_app_password_here
+   ```
+5. Initialize the database:
+   ```bash
+   flask db upgrade
+   ```
+6. Run the development server:
+   ```bash
+   flask run
+   ```
+
+## Exchange Rate API Setup
+
+1. Sign up for a free API key at [exchangerate-api.com](https://www.exchangerate-api.com/)
+2. Once you have your API key, go to the Reports page in the application
+3. Click on "Manage API Key" and enter your API key
+4. The exchange rates will be automatically updated
+
+## Database Migrations
+
+To create a new migration:
+```bash
+flask db migrate -m "Description of changes"
+```
+
+To apply migrations:
+```bash
+flask db upgrade
+```
+
+## Running Tests
+
+```bash
+python -m pytest
+```
+
+## Code Style
+
+The project uses Black for code formatting. To format your code:
+```bash
+black .
+```
+
+## Contributing
+
+1. Create a new branch for your feature
+2. Make your changes
+3. Run tests and ensure they pass
+4. Submit a pull request

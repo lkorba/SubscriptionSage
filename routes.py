@@ -650,25 +650,82 @@ def settings():
 @app.route('/api/exchange_rates')
 @login_required
 def get_exchange_rates():
-    base_currency = request.args.get('base', 'USD')
-    target_currencies = ['USD', 'EUR', 'CZK', 'PLN']
-    
+    currencies = ['USD', 'EUR', 'CZK', 'PLN']
     rates = {}
-    for target in target_currencies:
-        if target == base_currency:
-            rates[target] = 1.0
-        else:
-            exchange_rate = ExchangeRate.query.filter_by(
-                base_currency=base_currency,
-                target_currency=target
-            ).first()
-            
-            if exchange_rate:
-                rates[target] = exchange_rate.rate
+    
+    # Get all exchange rates from the database
+    for base in currencies:
+        rates[base] = {}
+        for target in currencies:
+            if base == target:
+                rates[base][target] = 1.0
             else:
-                rates[target] = 1.0  # Default if not found
+                exchange_rate = ExchangeRate.query.filter_by(
+                    base_currency=base,
+                    target_currency=target
+                ).first()
+                
+                if exchange_rate:
+                    rates[base][target] = exchange_rate.rate
+                else:
+                    # If no rate found, try to calculate via USD
+                    if base != 'USD' and target != 'USD':
+                        base_to_usd = ExchangeRate.query.filter_by(
+                            base_currency=base,
+                            target_currency='USD'
+                        ).first()
+                        usd_to_target = ExchangeRate.query.filter_by(
+                            base_currency='USD',
+                            target_currency=target
+                        ).first()
+                        
+                        if base_to_usd and usd_to_target:
+                            rates[base][target] = (1 / base_to_usd.rate) * usd_to_target.rate
+                        else:
+                            rates[base][target] = 1.0
+                    else:
+                        rates[base][target] = 1.0
     
     return jsonify(rates)
+
+@app.route('/api/refresh_exchange_rates', methods=['POST'])
+@login_required
+def refresh_exchange_rates():
+    try:
+        fetch_exchange_rates()
+        return jsonify({'success': True})
+    except Exception as e:
+        logger.error(f"Error refreshing exchange rates: {str(e)}")
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+@app.route('/api/set_exchange_rate_api_key', methods=['POST'])
+@login_required
+def set_exchange_rate_api_key():
+    try:
+        data = request.get_json()
+        api_key = data.get('api_key')
+        
+        if not api_key:
+            return jsonify({'success': False, 'message': 'API key is required'}), 400
+        
+        # Store the API key in the database
+        user = User.query.get(current_user.id)
+        user.exchange_rate_api_key = api_key
+        db.session.commit()
+        
+        # Attempt to fetch exchange rates with the new key
+        try:
+            fetch_exchange_rates()
+            return jsonify({'success': True, 'message': 'API key saved and exchange rates updated successfully'})
+        except Exception as e:
+            # If fetching fails, rollback the API key
+            user.exchange_rate_api_key = None
+            db.session.commit()
+            return jsonify({'success': False, 'message': f'Invalid API key: {str(e)}'}), 400
+            
+    except Exception as e:
+        logger.error(f"Error setting API key: {str(e)}")
+        return jsonify({'success': False, 'message': str(e)}), 500
 
 # Helper functions
 def create_default_reminders(user):

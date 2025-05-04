@@ -2,6 +2,23 @@
 
 This document describes the utility functions available in the SubscriptionSage application.
 
+## Exchange Rates
+
+The application uses the Exchange Rate API to fetch and update exchange rates. The rates are stored in the database and updated daily.
+
+### Setup
+
+1. Sign up for a free API key at [exchangerate-api.com](https://www.exchangerate-api.com/)
+2. Go to the Reports page in the application
+3. Click on "Manage API Key" and enter your API key
+4. The exchange rates will be automatically updated
+
+### Functions
+
+- `fetch_exchange_rates()`: Fetches the latest exchange rates from the API and updates the database
+- `convert_currency(amount, from_currency, to_currency)`: Converts an amount from one currency to another
+- `format_currency(amount, currency)`: Formats an amount with the appropriate currency symbol
+
 ## Currency Management
 
 ### `fetch_exchange_rates()`
@@ -43,33 +60,24 @@ Formats an amount with the appropriate currency symbol.
 
 ## Reminder System
 
-### `check_upcoming_reminders()`
+The application can send email reminders for upcoming subscription payments.
 
-Checks for subscriptions with upcoming payments and sends reminders.
+### Setup
 
-- **Called by**: Scheduler
-- **Actions**:
-  - Checks all active reminders
-  - Sends email notifications
-  - Marks reminders as sent
-- **Dependencies**: Requires email configuration
+1. Configure your email settings in the `.env` file:
+   ```
+   MAIL_SERVER=smtp.gmail.com
+   MAIL_PORT=587
+   MAIL_USE_TLS=True
+   MAIL_USERNAME=your_email@gmail.com
+   MAIL_PASSWORD=your_app_password_here
+   ```
 
-### `send_reminder_email(user, subscription, days_until_payment)`
+### Functions
 
-Sends a reminder email for an upcoming subscription payment.
-
-- **Parameters**:
-  - `user`: User object
-  - `subscription`: Subscription object
-  - `days_until_payment`: Days until payment is due
-- **Template**: Uses `email/payment_reminder.html`
-
-### `reset_reminders_for_next_period()`
-
-Resets reminders for subscriptions that have been renewed.
-
-- **Called by**: After subscription renewal
-- **Actions**: Resets `is_sent` flag for all reminders
+- `check_upcoming_reminders()`: Checks for upcoming payments and sends reminders
+- `send_reminder_email(user, subscription, days_until_payment)`: Sends an email reminder
+- `reset_reminders_for_next_period()`: Resets reminders for the next billing period
 
 ## Service Management
 

@@ -135,7 +135,18 @@
     "upload_import": "Upload & Import",
     "monthly_spending_in": "Monthly Spending ({{currency}})",
     "amount_in": "Amount ({{currency}})",
-    "monthly_spending_by_cycle": "Monthly Spending by Billing Cycle"
+    "exchange_rates": "Exchange Rates",
+    "refresh_rates": "Refresh Rates",
+    "refreshing": "Refreshing...",
+    "manage_api_key": "Manage API Key",
+    "base_currency": "Base Currency",
+    "target_currency": "Target Currency",
+    "rate": "Rate",
+    "last_updated": "Last Updated",
+    "api_key_settings": "Exchange Rate API Settings",
+    "api_key": "API Key",
+    "api_key_help": "Enter your Exchange Rate API key. Get one at exchangerate-api.com",
+    "save_api_key": "Save API Key"
   },
   "settings": {
     "title": "Account Settings",
