@@ -1,2 +1,58 @@
+# Python
 __pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Environment files
 .env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/settings.json
+.vscode/launch.json
+.vscode/tasks.json
+.vscode/extensions.json
+*.swp
+*.swo
+*~
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Docker (if needed)
+# Uncomment if you want to ignore docker-compose override files
+# docker-compose.override.yml
